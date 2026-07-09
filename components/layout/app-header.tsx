@@ -7,7 +7,7 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-base/85 backdrop-blur-xl">
       <div className="mx-auto flex max-w-xl items-center justify-between px-4 py-2.5">
-        <Logo size="sm" />
+        <Logo size="md" />
         <div className="flex items-center gap-1">
           <Link
             href="/caregiver"
