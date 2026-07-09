@@ -31,15 +31,15 @@ export function OccurrenceCard({
   return (
     <li
       className={cn(
-        "flex flex-wrap items-center gap-4 rounded-2xl border bg-white p-5 shadow-soft transition-all",
-        done ? "border-sand-100 opacity-70" : "border-sand-100 hover:shadow-lifted",
-        overdue && "border-clay-100 bg-clay-50/40",
+        "flex flex-wrap items-center gap-4 rounded-2xl border bg-elev-1 p-5 transition-all",
+        done ? "border-white/10 opacity-70" : "border-white/10 hover:bg-elev-2",
+        overdue && "border-tint-red/30 bg-tint-red/10",
       )}
     >
       <div
         className={cn(
           "flex size-12 shrink-0 items-center justify-center rounded-xl",
-          done ? "bg-sage-100 text-sage-700" : "bg-sand-100 text-sand-600",
+          done ? "bg-tint-green/15 text-tint-green" : "bg-elev-2 text-label-3",
         )}
       >
         {done ? (
@@ -52,23 +52,23 @@ export function OccurrenceCard({
       <div className="min-w-0 flex-1">
         <p
           className={cn(
-            "text-lg font-semibold text-sand-950",
-            done && "line-through decoration-sand-400",
+            "text-lg font-semibold text-label",
+            done && "line-through decoration-label-4",
           )}
         >
           {reminder.title}
         </p>
-        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-base text-sand-600">
+        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-base text-label-3">
           <span className="inline-flex items-center gap-1.5">
             <Clock3 className="size-5" aria-hidden="true" />
             {formatTimeOfDay(reminder.time_of_day)}
           </span>
           <Badge tone={meta.tone}>{meta.label}</Badge>
           {overdue && !event && (
-            <span className="font-medium text-clay-600">Still waiting</span>
+            <span className="font-medium text-tint-red">Still waiting</span>
           )}
           {snoozed && event?.snoozed_until && (
-            <span className="font-medium text-honey-600">
+            <span className="font-medium text-tint-orange">
               Snoozed until{" "}
               {new Date(event.snoozed_until).toLocaleTimeString("en-US", {
                 hour: "numeric",
@@ -78,7 +78,7 @@ export function OccurrenceCard({
           )}
         </div>
         {reminder.description && !done && (
-          <p className="mt-1.5 text-base text-sand-600">{reminder.description}</p>
+          <p className="mt-1.5 text-base text-label-3">{reminder.description}</p>
         )}
       </div>
 

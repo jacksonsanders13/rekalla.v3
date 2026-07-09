@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AppProviders } from "./providers";
-import { Sidebar } from "@/components/layout/sidebar";
-import { MobileNav, MobileHeader } from "@/components/layout/mobile-nav";
+import { AppHeader } from "@/components/layout/app-header";
+import { TabBar } from "@/components/layout/tab-bar";
 
 export default async function AppLayout({
   children,
@@ -16,28 +16,20 @@ export default async function AppLayout({
     redirect("/login");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
-
-  const displayName = profile?.full_name || user.email || "You";
-
   return (
     <AppProviders>
-      <div className="min-h-dvh lg:flex">
-        <Sidebar displayName={displayName} email={user.email ?? ""} />
-        <div className="flex min-w-0 flex-1 flex-col">
-          <MobileHeader displayName={displayName} />
-          <main
-            id="main"
-            className="mx-auto w-full max-w-5xl flex-1 px-4 pb-28 pt-6 sm:px-6 lg:px-10 lg:pb-12 lg:pt-10"
-          >
-            {children}
-          </main>
-        </div>
-        <MobileNav />
+      <div className="min-h-dvh">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-elev-2 focus:px-4 focus:py-2 focus:text-label"
+        >
+          Skip to main content
+        </a>
+        <AppHeader />
+        <main id="main" className="mx-auto w-full max-w-xl px-4 pb-32 pt-6">
+          {children}
+        </main>
+        <TabBar />
       </div>
     </AppProviders>
   );

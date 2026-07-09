@@ -48,15 +48,15 @@ export function ForgotPasswordForm() {
         subtitle="If an account exists with that address, we've sent a link to reset your password."
       >
         <div className="flex justify-center py-4">
-          <div className="flex size-16 items-center justify-center rounded-2xl bg-sage-100 text-sage-700">
+          <div className="flex size-16 items-center justify-center rounded-2xl bg-tint-green/15 text-tint-green">
             <MailCheck className="size-8" aria-hidden="true" />
           </div>
         </div>
-        <p className="text-center text-base text-sand-700">
+        <p className="text-center text-base text-label-3">
           Remembered it after all?{" "}
           <Link
             href="/login"
-            className="font-semibold text-sage-700 underline-offset-4 hover:underline"
+            className="font-semibold text-tint-green underline-offset-4 hover:underline"
           >
             Back to log in
           </Link>
@@ -90,10 +90,10 @@ export function ForgotPasswordForm() {
         </Button>
       </form>
 
-      <p className="mt-7 text-center text-base text-sand-700">
+      <p className="mt-7 text-center text-base text-label-3">
         <Link
           href="/login"
-          className="font-semibold text-sage-700 underline-offset-4 hover:underline"
+          className="font-semibold text-tint-green underline-offset-4 hover:underline"
         >
           Back to log in
         </Link>

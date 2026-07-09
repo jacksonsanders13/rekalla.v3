@@ -171,13 +171,13 @@ export function VaultForm({
         )}
       </Field>
 
-      <label className="flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border border-sand-200 bg-sand-50 px-4 py-3">
+      <label className="flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border border-white/15 bg-elev-2 px-4 py-3">
         <input
           type="checkbox"
-          className="size-6 accent-sage-600"
+          className="size-6 accent-tint-green"
           {...register("isPinned")}
         />
-        <span className="text-base font-medium text-sand-800">
+        <span className="text-base font-medium text-label-2">
           Pin to the top — for the things you look up most
         </span>
       </label>

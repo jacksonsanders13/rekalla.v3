@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
 
 /**
  * Modal built on the native <dialog> element, which gives us focus trapping,
- * Escape-to-close, and correct screen-reader semantics for free.
+ * Escape-to-close, and correct screen-reader semantics for free. Styled like
+ * an iOS sheet.
  */
 export function Dialog({
   open,
@@ -50,31 +51,28 @@ export function Dialog({
       }}
       aria-labelledby="dialog-title"
       className={cn(
-        "m-auto w-[calc(100vw-2rem)] max-w-lg rounded-3xl bg-white p-0 shadow-lifted backdrop:bg-sand-950/40 backdrop:backdrop-blur-sm",
+        "m-auto w-[calc(100vw-2rem)] max-w-lg rounded-3xl bg-elev-1 p-0 text-label ring-1 ring-white/10 backdrop:bg-black/60 backdrop:backdrop-blur-sm",
         "open:animate-scale-in",
         className,
       )}
     >
-      <div className="max-h-[85dvh] overflow-y-auto p-7">
+      <div className="max-h-[85dvh] overflow-y-auto p-6 sm:p-7">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2
-              id="dialog-title"
-              className="font-display text-2xl font-medium text-sand-950"
-            >
+            <h2 id="dialog-title" className="text-2xl font-bold text-label">
               {title}
             </h2>
             {description && (
-              <p className="mt-1.5 text-base text-sand-600">{description}</p>
+              <p className="mt-1.5 text-base text-label-3">{description}</p>
             )}
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close dialog"
-            className="flex size-11 shrink-0 items-center justify-center rounded-xl text-sand-500 transition-colors hover:bg-sand-100 hover:text-sand-800"
+            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-elev-2 text-label-3 transition-colors hover:bg-elev-3 hover:text-label"
           >
-            <X className="size-6" aria-hidden="true" />
+            <X className="size-5" aria-hidden="true" />
           </button>
         </div>
         <div className="mt-6">{children}</div>

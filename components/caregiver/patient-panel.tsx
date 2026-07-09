@@ -92,17 +92,17 @@ export function PatientPanel({
         <button
           type="button"
           onClick={onBack}
-          className="mb-5 inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-base font-semibold text-sage-700 transition-colors hover:bg-sage-50"
+          className="mb-5 inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-base font-semibold text-tint-green transition-colors hover:bg-tint-green/10"
         >
           <ArrowLeft className="size-5" aria-hidden="true" />
           All people
         </button>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="font-display text-3xl font-medium tracking-tight text-sand-950">
+            <h1 className="text-3xl font-medium tracking-tight text-label">
               Caring for {patient.full_name}
             </h1>
-            <p className="mt-1.5 text-lg text-sand-600">
+            <p className="mt-1.5 text-lg text-label-3">
               {loading
                 ? "Loading today…"
                 : summary.total === 0
@@ -127,17 +127,17 @@ export function PatientPanel({
       {!loading && missed.length > 0 && (
         <div
           role="alert"
-          className="flex flex-wrap items-center gap-4 rounded-2xl border border-clay-100 bg-clay-50 p-6"
+          className="flex flex-wrap items-center gap-4 rounded-2xl border border-tint-red/30 bg-tint-red/10 p-6"
         >
-          <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-clay-100 text-clay-600">
+          <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-tint-red/15 text-tint-red">
             <AlertTriangle className="size-6" aria-hidden="true" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-lg font-semibold text-clay-700">
+            <p className="text-lg font-semibold text-tint-red">
               {missed.length} reminder{missed.length === 1 ? "" : "s"} not done
               yet
             </p>
-            <p className="mt-0.5 text-base text-clay-700/80">
+            <p className="mt-0.5 text-base text-tint-red/80">
               {missed.map((o) => o.reminder.title).join(" · ")}
             </p>
           </div>
@@ -170,14 +170,14 @@ export function PatientPanel({
       <section aria-labelledby="patient-today">
         <h2
           id="patient-today"
-          className="mb-4 text-2xl font-semibold text-sand-950"
+          className="mb-4 text-2xl font-semibold text-label"
         >
           Today&apos;s schedule
         </h2>
         {loading ? (
           <CardSkeleton rows={3} />
         ) : occurrences.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-sand-200 bg-sand-50/50 p-6 text-base text-sand-600">
+          <p className="rounded-2xl border border-dashed border-white/15 bg-elev-1/60 p-6 text-base text-label-3">
             Nothing scheduled for {name} today.
           </p>
         ) : (
@@ -197,14 +197,14 @@ export function PatientPanel({
       <section aria-labelledby="patient-reminders">
         <h2
           id="patient-reminders"
-          className="mb-4 text-2xl font-semibold text-sand-950"
+          className="mb-4 text-2xl font-semibold text-label"
         >
           {name}&apos;s reminders
         </h2>
         {loading ? (
           <CardSkeleton rows={3} />
         ) : (reminders.data ?? []).length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-sand-200 bg-sand-50/50 p-6 text-base text-sand-600">
+          <p className="rounded-2xl border border-dashed border-white/15 bg-elev-1/60 p-6 text-base text-label-3">
             No reminders yet — add the first one for {name}.
           </p>
         ) : (

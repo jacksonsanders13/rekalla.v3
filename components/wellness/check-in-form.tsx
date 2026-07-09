@@ -51,7 +51,7 @@ export function CheckInForm({
       className="space-y-7"
     >
       <fieldset>
-        <legend className="mb-3 text-lg font-semibold text-sand-950">
+        <legend className="mb-3 text-lg font-semibold text-label">
           How are you feeling today?
         </legend>
         <div className="grid grid-cols-5 gap-2 sm:gap-3">
@@ -66,14 +66,14 @@ export function CheckInForm({
               className={cn(
                 "flex min-h-20 flex-col items-center justify-center gap-1 rounded-2xl border-2 px-1 transition-all",
                 mood === option.value
-                  ? "border-sage-600 bg-sage-50 shadow-soft"
-                  : "border-sand-200 bg-white hover:border-sand-300",
+                  ? "border-tint-green bg-tint-green/10"
+                  : "border-white/15 bg-elev-2 hover:border-white/25",
               )}
             >
               <span className="text-3xl" aria-hidden="true">
                 {option.emoji}
               </span>
-              <span className="text-xs font-medium text-sand-700 sm:text-sm">
+              <span className="text-xs font-medium text-label-2 sm:text-sm">
                 {option.label}
               </span>
             </button>
@@ -82,7 +82,7 @@ export function CheckInForm({
       </fieldset>
 
       <fieldset>
-        <legend className="mb-3 text-lg font-semibold text-sand-950">
+        <legend className="mb-3 text-lg font-semibold text-label">
           How did you sleep last night?
         </legend>
         <div className="flex items-center gap-4">
@@ -90,13 +90,13 @@ export function CheckInForm({
             type="button"
             aria-label="Half an hour less sleep"
             onClick={() => adjustSleep(-0.5)}
-            className="flex size-14 items-center justify-center rounded-2xl border border-sand-200 bg-white text-sand-700 shadow-soft transition-colors hover:border-sand-300 hover:bg-sand-50"
+            className="flex size-14 items-center justify-center rounded-2xl border border-white/15 bg-elev-2 text-label-2 transition-colors hover:border-white/25 hover:bg-elev-2"
           >
             <Minus className="size-6" aria-hidden="true" />
           </button>
           <output
             aria-live="polite"
-            className="min-w-32 text-center text-2xl font-semibold text-sand-950"
+            className="min-w-32 text-center text-2xl font-semibold text-label"
           >
             {sleep === null ? "—" : `${sleep} hours`}
           </output>
@@ -104,7 +104,7 @@ export function CheckInForm({
             type="button"
             aria-label="Half an hour more sleep"
             onClick={() => adjustSleep(0.5)}
-            className="flex size-14 items-center justify-center rounded-2xl border border-sand-200 bg-white text-sand-700 shadow-soft transition-colors hover:border-sand-300 hover:bg-sand-50"
+            className="flex size-14 items-center justify-center rounded-2xl border border-white/15 bg-elev-2 text-label-2 transition-colors hover:border-white/25 hover:bg-elev-2"
           >
             <Plus className="size-6" aria-hidden="true" />
           </button>
@@ -112,7 +112,7 @@ export function CheckInForm({
       </fieldset>
 
       <fieldset>
-        <legend className="mb-3 text-lg font-semibold text-sand-950">
+        <legend className="mb-3 text-lg font-semibold text-label">
           How is your energy?
         </legend>
         <div className="grid grid-cols-5 gap-2 sm:gap-3">
@@ -128,8 +128,8 @@ export function CheckInForm({
               className={cn(
                 "flex min-h-16 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 transition-all",
                 energy === option.value
-                  ? "border-sage-600 bg-sage-50 shadow-soft"
-                  : "border-sand-200 bg-white hover:border-sand-300",
+                  ? "border-tint-green bg-tint-green/10"
+                  : "border-white/15 bg-elev-2 hover:border-white/25",
               )}
             >
               <span className="flex items-end gap-0.5" aria-hidden="true">
@@ -138,13 +138,13 @@ export function CheckInForm({
                     key={bar}
                     className={cn(
                       "w-1.5 rounded-full",
-                      bar <= option.value ? "bg-sage-600" : "bg-sand-200",
+                      bar <= option.value ? "bg-tint-green" : "bg-elev-3",
                     )}
                     style={{ height: `${6 + bar * 3}px` }}
                   />
                 ))}
               </span>
-              <span className="hidden text-xs font-medium text-sand-700 sm:block">
+              <span className="hidden text-xs font-medium text-label-2 sm:block">
                 {option.label}
               </span>
             </button>
@@ -155,7 +155,7 @@ export function CheckInForm({
       <div>
         <label
           htmlFor="daily-note"
-          className="mb-3 block text-lg font-semibold text-sand-950"
+          className="mb-3 block text-lg font-semibold text-label"
         >
           Anything you&apos;d like to note? (optional)
         </label>

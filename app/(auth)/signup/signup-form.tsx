@@ -58,15 +58,15 @@ export function SignupForm() {
         subtitle="We sent you a confirmation link. Open it to finish creating your account."
       >
         <div className="flex justify-center py-4">
-          <div className="flex size-16 items-center justify-center rounded-2xl bg-sage-100 text-sage-700">
+          <div className="flex size-16 items-center justify-center rounded-2xl bg-tint-green/15 text-tint-green">
             <MailCheck className="size-8" aria-hidden="true" />
           </div>
         </div>
-        <p className="text-center text-base text-sand-700">
+        <p className="text-center text-base text-label-3">
           Once you&apos;ve confirmed, you can{" "}
           <Link
             href="/login"
-            className="font-semibold text-sage-700 underline-offset-4 hover:underline"
+            className="font-semibold text-tint-green underline-offset-4 hover:underline"
           >
             log in here
           </Link>
@@ -128,11 +128,11 @@ export function SignupForm() {
         </Button>
       </form>
 
-      <p className="mt-7 text-center text-base text-sand-700">
+      <p className="mt-7 text-center text-base text-label-3">
         Already have an account?{" "}
         <Link
           href="/login"
-          className="font-semibold text-sage-700 underline-offset-4 hover:underline"
+          className="font-semibold text-tint-green underline-offset-4 hover:underline"
         >
           Log in
         </Link>

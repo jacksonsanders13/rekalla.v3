@@ -35,16 +35,16 @@ export function Field({
 
   return (
     <div className={cn("space-y-2", className)}>
-      <label htmlFor={id} className="block text-base font-semibold text-sand-900">
+      <label htmlFor={id} className="block text-base font-semibold text-label-2">
         {label}
         {required && (
-          <span className="ml-1 text-clay-600" aria-hidden="true">
+          <span className="ml-1 text-tint-red" aria-hidden="true">
             *
           </span>
         )}
       </label>
       {hint && (
-        <p id={hintId} className="text-sm text-sand-600">
+        <p id={hintId} className="text-sm text-label-3">
           {hint}
         </p>
       )}
@@ -54,7 +54,7 @@ export function Field({
         "aria-invalid": error ? true : undefined,
       })}
       {error && (
-        <p id={errorId} role="alert" className="text-sm font-medium text-clay-600">
+        <p id={errorId} role="alert" className="text-sm font-medium text-tint-red">
           {error}
         </p>
       )}

@@ -202,22 +202,22 @@ export function RoutineView({ userId }: { userId: string }) {
             return (
               <section key={period} aria-labelledby={`period-${period}`}>
                 <div className="mb-4 flex items-center gap-3">
-                  <div className="flex size-11 items-center justify-center rounded-xl bg-honey-100 text-honey-700">
+                  <div className="flex size-11 items-center justify-center rounded-xl bg-tint-orange/15 text-tint-orange">
                     <meta.icon className="size-6" aria-hidden="true" />
                   </div>
                   <div>
                     <h2
                       id={`period-${period}`}
-                      className="text-xl font-semibold text-sand-950"
+                      className="text-xl font-semibold text-label"
                     >
                       {meta.label}
                     </h2>
-                    <p className="text-sm text-sand-500">{meta.window}</p>
+                    <p className="text-sm text-label-3">{meta.window}</p>
                   </div>
                 </div>
 
                 {/* Timeline */}
-                <ol className="relative ml-5 space-y-3 border-l-2 border-sand-200 pl-7">
+                <ol className="relative ml-5 space-y-3 border-l-2 border-white/15 pl-7">
                   {periodItems.map((item) => {
                     const isDone = doneIds.has(item.id);
                     return (
@@ -227,13 +227,13 @@ export function RoutineView({ userId }: { userId: string }) {
                           className={cn(
                             "absolute -left-[38.5px] top-1/2 size-4 -translate-y-1/2 rounded-full border-2 transition-colors",
                             isDone
-                              ? "border-sage-600 bg-sage-600"
-                              : "border-sand-300 bg-white",
+                              ? "border-tint-green bg-tint-green"
+                              : "border-white/25 bg-elev-1",
                           )}
                         />
                         <div
                           className={cn(
-                            "flex items-center gap-4 rounded-2xl border border-sand-100 bg-white p-4 shadow-soft transition-all hover:shadow-lifted",
+                            "flex items-center gap-4 rounded-2xl bg-elev-1 p-4 transition-all hover:bg-elev-2",
                             isDone && "opacity-70",
                           )}
                         >
@@ -249,8 +249,8 @@ export function RoutineView({ userId }: { userId: string }) {
                             className={cn(
                               "flex size-12 shrink-0 items-center justify-center rounded-xl border-2 transition-all",
                               isDone
-                                ? "border-sage-600 bg-sage-600 text-white"
-                                : "border-sand-300 bg-white text-transparent hover:border-sage-500",
+                                ? "border-tint-green bg-tint-green text-black"
+                                : "border-white/25 bg-elev-2 text-transparent hover:border-tint-green",
                             )}
                           >
                             <Check className="size-6" aria-hidden="true" />
@@ -258,14 +258,14 @@ export function RoutineView({ userId }: { userId: string }) {
                           <div className="min-w-0 flex-1">
                             <p
                               className={cn(
-                                "text-lg font-medium text-sand-950",
-                                isDone && "line-through decoration-sand-400",
+                                "text-lg font-medium text-label",
+                                isDone && "line-through decoration-label-4",
                               )}
                             >
                               {item.title}
                             </p>
                             {item.time_of_day && (
-                              <p className="text-base text-sand-500">
+                              <p className="text-base text-label-3">
                                 around {formatTimeOfDay(item.time_of_day)}
                               </p>
                             )}
@@ -278,7 +278,7 @@ export function RoutineView({ userId }: { userId: string }) {
                                 setEditing(item);
                                 setFormOpen(true);
                               }}
-                              className="flex size-11 items-center justify-center rounded-xl text-sand-400 transition-colors hover:bg-sand-100 hover:text-sand-700"
+                              className="flex size-11 items-center justify-center rounded-xl text-label-4 transition-colors hover:bg-elev-2 hover:text-label-2"
                             >
                               <Pencil className="size-5" aria-hidden="true" />
                             </button>
@@ -286,7 +286,7 @@ export function RoutineView({ userId }: { userId: string }) {
                               type="button"
                               aria-label={`Remove ${item.title}`}
                               onClick={() => setDeleting(item)}
-                              className="flex size-11 items-center justify-center rounded-xl text-sand-400 transition-colors hover:bg-clay-50 hover:text-clay-600"
+                              className="flex size-11 items-center justify-center rounded-xl text-label-4 transition-colors hover:bg-tint-red/10 hover:text-tint-red"
                             >
                               <Trash2 className="size-5" aria-hidden="true" />
                             </button>

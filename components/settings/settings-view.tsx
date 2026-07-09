@@ -136,8 +136,8 @@ export function SettingsView({
           <CardHeader title="Account" />
           <CardBody className="space-y-5">
             <div>
-              <p className="text-sm font-medium text-sand-500">Signed in as</p>
-              <p className="text-lg font-semibold text-sand-950">{email}</p>
+              <p className="text-sm font-medium text-label-3">Signed in as</p>
+              <p className="text-lg font-semibold text-label">{email}</p>
             </div>
             <Button variant="secondary" onClick={signOut}>
               <LogOut className="size-5" aria-hidden="true" />

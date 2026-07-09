@@ -27,18 +27,18 @@ export function ReminderList({
           <li
             key={reminder.id}
             className={cn(
-              "flex flex-wrap items-center gap-4 rounded-2xl border border-sand-100 bg-white p-5 shadow-soft transition-shadow hover:shadow-lifted",
+              "flex flex-wrap items-center gap-4 rounded-2xl bg-elev-1 p-5 transition-colors hover:bg-elev-2",
               !reminder.is_active && "opacity-60",
             )}
           >
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-sand-100 text-sand-600">
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-elev-2 text-label-3">
               <meta.icon className="size-6" aria-hidden="true" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-lg font-semibold text-sand-950">
+              <p className="text-lg font-semibold text-label">
                 {reminder.title}
               </p>
-              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-base text-sand-600">
+              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-base text-label-3">
                 <span>{describeSchedule(reminder)}</span>
                 <Badge tone={meta.tone}>{meta.label}</Badge>
                 {!reminder.is_active && <Badge>Paused</Badge>}
@@ -53,7 +53,7 @@ export function ReminderList({
                     : `Resume ${reminder.title}`
                 }
                 onClick={() => onToggleActive(reminder)}
-                className="flex size-12 items-center justify-center rounded-xl text-sand-500 transition-colors hover:bg-sand-100 hover:text-sand-800"
+                className="flex size-12 items-center justify-center rounded-xl text-label-3 transition-colors hover:bg-elev-2 hover:text-label-2"
               >
                 {reminder.is_active ? (
                   <PauseCircle className="size-6" aria-hidden="true" />
@@ -65,7 +65,7 @@ export function ReminderList({
                 type="button"
                 aria-label={`Edit ${reminder.title}`}
                 onClick={() => onEdit(reminder)}
-                className="flex size-12 items-center justify-center rounded-xl text-sand-500 transition-colors hover:bg-sand-100 hover:text-sand-800"
+                className="flex size-12 items-center justify-center rounded-xl text-label-3 transition-colors hover:bg-elev-2 hover:text-label-2"
               >
                 <Pencil className="size-5" aria-hidden="true" />
               </button>
@@ -73,7 +73,7 @@ export function ReminderList({
                 type="button"
                 aria-label={`Delete ${reminder.title}`}
                 onClick={() => onDelete(reminder)}
-                className="flex size-12 items-center justify-center rounded-xl text-sand-500 transition-colors hover:bg-clay-50 hover:text-clay-600"
+                className="flex size-12 items-center justify-center rounded-xl text-label-3 transition-colors hover:bg-tint-red/10 hover:text-tint-red"
               >
                 <Trash2 className="size-5" aria-hidden="true" />
               </button>

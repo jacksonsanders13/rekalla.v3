@@ -34,9 +34,9 @@ const icons = {
 } as const;
 
 const toneStyles = {
-  success: "border-sage-200 bg-sage-50 text-sage-900 [&_svg]:text-sage-600",
-  error: "border-clay-100 bg-clay-50 text-clay-700 [&_svg]:text-clay-600",
-  info: "border-sky-100 bg-sky-50 text-sky-700 [&_svg]:text-sky-600",
+  success: "[&_svg.toast-icon]:text-tint-green",
+  error: "[&_svg.toast-icon]:text-tint-red",
+  info: "[&_svg.toast-icon]:text-tint-blue",
 } as const;
 
 export function ToastProvider({ children }: { children: ReactNode }) {
@@ -63,7 +63,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div
         aria-live="polite"
         aria-label="Notifications"
-        className="pointer-events-none fixed inset-x-4 bottom-24 z-50 flex flex-col items-center gap-3 sm:bottom-6"
+        className="pointer-events-none fixed inset-x-4 bottom-28 z-50 flex flex-col items-center gap-3"
       >
         {toasts.map((toast) => {
           const Icon = icons[toast.tone];
@@ -72,17 +72,19 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               key={toast.id}
               role="status"
               className={cn(
-                "pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-2xl border px-5 py-4 shadow-lifted animate-fade-up",
+                "pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-2xl bg-elev-2 px-5 py-4 ring-1 ring-white/10 animate-fade-up",
                 toneStyles[toast.tone],
               )}
             >
-              <Icon className="size-6 shrink-0" aria-hidden="true" />
-              <p className="flex-1 text-base font-medium">{toast.message}</p>
+              <Icon className="toast-icon size-6 shrink-0" aria-hidden="true" />
+              <p className="flex-1 text-base font-medium text-label">
+                {toast.message}
+              </p>
               <button
                 type="button"
                 onClick={() => dismiss(toast.id)}
                 aria-label="Dismiss notification"
-                className="flex size-9 shrink-0 items-center justify-center rounded-lg opacity-60 transition-opacity hover:opacity-100"
+                className="flex size-9 shrink-0 items-center justify-center rounded-lg text-label-3 transition-colors hover:text-label"
               >
                 <X className="size-5" aria-hidden="true" />
               </button>

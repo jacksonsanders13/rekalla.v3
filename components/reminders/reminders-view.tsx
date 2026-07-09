@@ -125,7 +125,7 @@ export function RemindersView({
       <div
         role="tablist"
         aria-label="Reminder views"
-        className="mb-6 inline-flex rounded-2xl border border-sand-200 bg-white p-1.5 shadow-soft"
+        className="mb-6 inline-flex rounded-2xl border border-white/15 bg-elev-1 p-1.5"
       >
         {(
           [
@@ -141,8 +141,8 @@ export function RemindersView({
             className={cn(
               "min-h-12 rounded-xl px-5 text-base font-semibold transition-colors",
               tab === item.id
-                ? "bg-sage-600 text-white shadow-soft"
-                : "text-sand-700 hover:bg-sand-100",
+                ? "bg-tint-green text-black"
+                : "text-label-2 hover:bg-elev-2",
             )}
           >
             {item.label}

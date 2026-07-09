@@ -80,7 +80,7 @@ export function LoginForm() {
         <div className="text-right">
           <Link
             href="/forgot-password"
-            className="text-base font-medium text-sage-700 underline-offset-4 hover:underline"
+            className="text-base font-medium text-tint-green underline-offset-4 hover:underline"
           >
             Forgot your password?
           </Link>
@@ -91,11 +91,11 @@ export function LoginForm() {
         </Button>
       </form>
 
-      <p className="mt-7 text-center text-base text-sand-700">
+      <p className="mt-7 text-center text-base text-label-3">
         New to Rekalla?{" "}
         <Link
           href="/signup"
-          className="font-semibold text-sage-700 underline-offset-4 hover:underline"
+          className="font-semibold text-tint-green underline-offset-4 hover:underline"
         >
           Create an account
         </Link>

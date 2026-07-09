@@ -120,7 +120,7 @@ export function VaultView({ userId }: { userId: string }) {
       <div className="mb-6 space-y-4">
         <div className="relative max-w-xl">
           <Search
-            className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-sand-400"
+            className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-label-4"
             aria-hidden="true"
           />
           <Input
@@ -145,8 +145,8 @@ export function VaultView({ userId }: { userId: string }) {
             className={cn(
               "min-h-11 rounded-full border px-4 text-base font-medium transition-colors",
               filter === "all"
-                ? "border-sage-600 bg-sage-600 text-white"
-                : "border-sand-200 bg-white text-sand-700 hover:border-sand-300",
+                ? "border-tint-green bg-tint-green text-black"
+                : "border-white/15 bg-elev-1 text-label-2 hover:border-white/25",
             )}
           >
             Everything ({items.data?.length ?? 0})
@@ -165,8 +165,8 @@ export function VaultView({ userId }: { userId: string }) {
               className={cn(
                 "inline-flex min-h-11 items-center gap-1.5 rounded-full border px-4 text-base font-medium transition-colors",
                 filter === value
-                  ? "border-sage-600 bg-sage-600 text-white"
-                  : "border-sand-200 bg-white text-sand-700 hover:border-sand-300",
+                  ? "border-tint-green bg-tint-green text-black"
+                  : "border-white/15 bg-elev-1 text-label-2 hover:border-white/25",
               )}
             >
               <meta.icon className="size-4" aria-hidden="true" />
@@ -215,25 +215,25 @@ export function VaultView({ userId }: { userId: string }) {
             return (
               <li
                 key={item.id}
-                className="flex flex-col rounded-2xl border border-sand-100 bg-white p-6 shadow-soft transition-shadow hover:shadow-lifted"
+                className="flex flex-col rounded-2xl bg-elev-1 p-6 transition-colors hover:bg-elev-2"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-sand-100 text-sand-600">
+                    <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-elev-2 text-label-3">
                       <meta.icon className="size-6" aria-hidden="true" />
                     </div>
                     <div>
-                      <p className="text-lg font-semibold text-sand-950">
+                      <p className="text-lg font-semibold text-label">
                         {item.title}
                         {item.is_pinned && (
                           <Pin
-                            className="ml-2 inline size-4 text-honey-600"
+                            className="ml-2 inline size-4 text-tint-orange"
                             aria-label="Pinned"
                           />
                         )}
                       </p>
                       {item.subtitle && (
-                        <p className="text-base text-sand-600">{item.subtitle}</p>
+                        <p className="text-base text-label-3">{item.subtitle}</p>
                       )}
                     </div>
                   </div>
@@ -244,34 +244,34 @@ export function VaultView({ userId }: { userId: string }) {
                   {item.phone && (
                     <a
                       href={`tel:${item.phone.replace(/[^+\d]/g, "")}`}
-                      className="flex min-h-12 items-center gap-3 rounded-xl bg-sage-50 px-4 text-lg font-semibold text-sage-800 transition-colors hover:bg-sage-100"
+                      className="flex min-h-12 items-center gap-3 rounded-xl bg-tint-green/10 px-4 text-lg font-semibold text-tint-green transition-colors hover:bg-tint-green/15"
                     >
-                      <Phone className="size-5 text-sage-600" aria-hidden="true" />
+                      <Phone className="size-5 text-tint-green" aria-hidden="true" />
                       {item.phone}
                     </a>
                   )}
                   {item.email && (
                     <a
                       href={`mailto:${item.email}`}
-                      className="flex min-h-12 items-center gap-3 rounded-xl px-4 text-base text-sand-700 transition-colors hover:bg-sand-100"
+                      className="flex min-h-12 items-center gap-3 rounded-xl px-4 text-base text-label-2 transition-colors hover:bg-elev-2"
                     >
-                      <Mail className="size-5 text-sand-500" aria-hidden="true" />
+                      <Mail className="size-5 text-label-3" aria-hidden="true" />
                       <span className="truncate">{item.email}</span>
                     </a>
                   )}
                   {item.address && (
-                    <p className="flex items-start gap-3 px-4 text-base text-sand-700">
+                    <p className="flex items-start gap-3 px-4 text-base text-label-2">
                       <MapPin
-                        className="mt-1 size-5 shrink-0 text-sand-500"
+                        className="mt-1 size-5 shrink-0 text-label-3"
                         aria-hidden="true"
                       />
                       {item.address}
                     </p>
                   )}
                   {item.date_value && (
-                    <p className="flex items-center gap-3 px-4 text-base text-sand-700">
+                    <p className="flex items-center gap-3 px-4 text-base text-label-2">
                       <CalendarHeart
-                        className="size-5 shrink-0 text-sand-500"
+                        className="size-5 shrink-0 text-label-3"
                         aria-hidden="true"
                       />
                       {fromDateKey(item.date_value).toLocaleDateString("en-US", {
@@ -282,13 +282,13 @@ export function VaultView({ userId }: { userId: string }) {
                     </p>
                   )}
                   {item.notes && (
-                    <p className="whitespace-pre-line px-4 pt-1 text-base leading-relaxed text-sand-600">
+                    <p className="whitespace-pre-line px-4 pt-1 text-base leading-relaxed text-label-3">
                       {item.notes}
                     </p>
                   )}
                 </div>
 
-                <div className="mt-4 flex justify-end gap-1 border-t border-sand-100 pt-3">
+                <div className="mt-4 flex justify-end gap-1 border-t border-white/10 pt-3">
                   <button
                     type="button"
                     aria-label={`Edit ${item.title}`}
@@ -296,7 +296,7 @@ export function VaultView({ userId }: { userId: string }) {
                       setEditing(item);
                       setFormOpen(true);
                     }}
-                    className="flex size-11 items-center justify-center rounded-xl text-sand-400 transition-colors hover:bg-sand-100 hover:text-sand-700"
+                    className="flex size-11 items-center justify-center rounded-xl text-label-4 transition-colors hover:bg-elev-2 hover:text-label-2"
                   >
                     <Pencil className="size-5" aria-hidden="true" />
                   </button>
@@ -304,7 +304,7 @@ export function VaultView({ userId }: { userId: string }) {
                     type="button"
                     aria-label={`Delete ${item.title}`}
                     onClick={() => setDeleting(item)}
-                    className="flex size-11 items-center justify-center rounded-xl text-sand-400 transition-colors hover:bg-clay-50 hover:text-clay-600"
+                    className="flex size-11 items-center justify-center rounded-xl text-label-4 transition-colors hover:bg-tint-red/10 hover:text-tint-red"
                   >
                     <Trash2 className="size-5" aria-hidden="true" />
                   </button>

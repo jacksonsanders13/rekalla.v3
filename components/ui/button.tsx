@@ -4,17 +4,15 @@ import { cn } from "@/lib/utils";
 
 const variants = {
   primary:
-    "bg-sage-600 text-white shadow-soft hover:bg-sage-700 hover:shadow-lifted active:bg-sage-800",
-  secondary:
-    "border border-sand-200 bg-white text-sand-900 shadow-soft hover:border-sand-300 hover:bg-sand-50",
-  ghost: "text-sand-800 hover:bg-sand-100 active:bg-sand-200",
-  danger:
-    "bg-clay-600 text-white shadow-soft hover:bg-clay-700 active:bg-clay-700",
-  "danger-ghost": "text-clay-600 hover:bg-clay-50 active:bg-clay-100",
+    "bg-tint-green text-black hover:brightness-110 active:brightness-90",
+  secondary: "bg-elev-2 text-label hover:bg-elev-3 active:bg-elev-3",
+  ghost: "text-label-2 hover:bg-white/10 active:bg-white/15",
+  danger: "bg-tint-red text-white hover:brightness-110 active:brightness-90",
+  "danger-ghost": "text-tint-red hover:bg-tint-red/10 active:bg-tint-red/15",
 } as const;
 
 // Touch targets stay ≥44px (WCAG 2.5.5) — "sm" is only for dense
-// caregiver tables, never primary actions.
+// rows, never primary actions.
 const sizes = {
   sm: "min-h-11 px-4 text-sm rounded-xl gap-1.5",
   md: "min-h-12 px-5 text-base rounded-xl gap-2",
@@ -38,7 +36,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || loading}
         className={cn(
           "inline-flex select-none items-center justify-center font-semibold transition-all",
-          "disabled:pointer-events-none disabled:opacity-60",
+          "disabled:pointer-events-none disabled:opacity-50",
           variants[variant],
           sizes[size],
           className,

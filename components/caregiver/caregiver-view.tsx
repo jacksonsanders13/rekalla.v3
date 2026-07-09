@@ -126,12 +126,12 @@ export function CaregiverView({
                 {grouped.incoming.map((link) => (
                   <li
                     key={link.id}
-                    className="flex flex-wrap items-center gap-4 rounded-2xl border border-sage-200 bg-sage-50 p-6"
+                    className="flex flex-wrap items-center gap-4 rounded-2xl border border-tint-green/30 bg-tint-green/10 p-6"
                   >
-                    <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-sage-600 text-white">
+                    <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-tint-green text-black">
                       <HeartHandshake className="size-6" aria-hidden="true" />
                     </div>
-                    <p className="min-w-0 flex-1 text-lg text-sage-900">
+                    <p className="min-w-0 flex-1 text-lg text-tint-green">
                       <strong>{link.patient?.full_name ?? "Someone"}</strong>{" "}
                       has asked you to be their caregiver
                       {link.relationship ? ` (${link.relationship})` : ""}.
@@ -172,12 +172,12 @@ export function CaregiverView({
           <section aria-labelledby="patients-heading">
             <h2
               id="patients-heading"
-              className="mb-4 text-2xl font-semibold text-sand-950"
+              className="mb-4 text-2xl font-semibold text-label"
             >
               People I care for
             </h2>
             {grouped.patients.length === 0 ? (
-              <p className="rounded-2xl border border-dashed border-sand-200 bg-sand-50/50 p-6 text-base text-sand-600">
+              <p className="rounded-2xl border border-dashed border-white/15 bg-elev-1/60 p-6 text-base text-label-3">
                 When someone invites you to be their caregiver, they&apos;ll
                 appear here — with their schedule, missed reminders, and
                 wellness history.
@@ -190,24 +190,24 @@ export function CaregiverView({
                       <button
                         type="button"
                         onClick={() => setSelectedPatient(link.patient)}
-                        className="flex w-full items-center gap-4 rounded-2xl border border-sand-100 bg-white p-6 text-left shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-lifted"
+                        className="flex w-full items-center gap-4 rounded-2xl bg-elev-1 p-6 text-left transition-all hover:-translate-y-0.5 hover:bg-elev-2"
                       >
                         <span
                           aria-hidden="true"
-                          className="flex size-14 shrink-0 items-center justify-center rounded-full bg-plum-100 text-xl font-semibold text-plum-700"
+                          className="flex size-14 shrink-0 items-center justify-center rounded-full bg-tint-purple/15 text-xl font-semibold text-tint-purple"
                         >
                           {initials(link.patient.full_name)}
                         </span>
                         <span className="min-w-0 flex-1">
-                          <span className="block text-lg font-semibold text-sand-950">
+                          <span className="block text-lg font-semibold text-label">
                             {link.patient.full_name}
                           </span>
-                          <span className="block text-base text-sand-600">
+                          <span className="block text-base text-label-3">
                             View schedule &amp; wellness
                           </span>
                         </span>
                         <ArrowRight
-                          className="size-6 shrink-0 text-sand-400"
+                          className="size-6 shrink-0 text-label-4"
                           aria-hidden="true"
                         />
                       </button>
@@ -222,7 +222,7 @@ export function CaregiverView({
           <section aria-labelledby="caregivers-heading">
             <h2
               id="caregivers-heading"
-              className="mb-4 text-2xl font-semibold text-sand-950"
+              className="mb-4 text-2xl font-semibold text-label"
             >
               My caregivers
             </h2>
@@ -230,7 +230,7 @@ export function CaregiverView({
               <Card>
                 <CardHeader title="Invite someone you trust" />
                 <CardBody>
-                  <p className="mb-5 text-base text-sand-600">
+                  <p className="mb-5 text-base text-label-3">
                     They&apos;ll be able to see your schedule and wellness, and
                     add helpful reminders. You can remove them at any time.
                   </p>
@@ -273,7 +273,7 @@ export function CaregiverView({
                 <CardHeader title="People who can help" />
                 <CardBody>
                   {grouped.caregivers.length === 0 ? (
-                    <p className="text-base text-sand-600">
+                    <p className="text-base text-label-3">
                       No caregivers yet. Invite a family member or friend so
                       they can lend a hand.
                     </p>
@@ -282,11 +282,11 @@ export function CaregiverView({
                       {grouped.caregivers.map((link: CareLink) => (
                         <li
                           key={link.id}
-                          className="flex items-center gap-4 rounded-xl border border-sand-100 p-4"
+                          className="flex items-center gap-4 rounded-xl p-4"
                         >
                           <span
                             aria-hidden="true"
-                            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-sky-100 text-base font-semibold text-sky-700"
+                            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-tint-blue/15 text-base font-semibold text-tint-blue"
                           >
                             {link.caregiver ? (
                               initials(link.caregiver.full_name)
@@ -295,17 +295,17 @@ export function CaregiverView({
                             )}
                           </span>
                           <div className="min-w-0 flex-1">
-                            <p className="truncate text-base font-semibold text-sand-950">
+                            <p className="truncate text-base font-semibold text-label">
                               {link.caregiver?.full_name ?? link.invited_email}
                             </p>
                             <div className="mt-0.5 flex items-center gap-2">
                               {link.relationship && (
-                                <span className="text-sm text-sand-500">
+                                <span className="text-sm text-label-3">
                                   {link.relationship}
                                 </span>
                               )}
                               <Badge
-                                tone={link.status === "active" ? "sage" : "honey"}
+                                tone={link.status === "active" ? "green" : "orange"}
                               >
                                 {link.status === "active" ? "Connected" : "Invited"}
                               </Badge>
@@ -319,7 +319,7 @@ export function CaregiverView({
                                 onSuccess: () => toast("Caregiver removed.", "info"),
                               })
                             }
-                            className="flex size-11 shrink-0 items-center justify-center rounded-xl text-sand-400 transition-colors hover:bg-clay-50 hover:text-clay-600"
+                            className="flex size-11 shrink-0 items-center justify-center rounded-xl text-label-4 transition-colors hover:bg-tint-red/10 hover:text-tint-red"
                           >
                             <X className="size-5" aria-hidden="true" />
                           </button>

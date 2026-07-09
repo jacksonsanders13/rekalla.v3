@@ -7,11 +7,11 @@ export function Skeleton({ className }: { className?: string }) {
 /** Generic card-shaped loading placeholder used by route loading.tsx files. */
 export function CardSkeleton({ rows = 3 }: { rows?: number }) {
   return (
-    <div className="rounded-2xl border border-sand-100 bg-white p-6 shadow-soft">
-      <Skeleton className="h-6 w-44" />
+    <div className="rounded-3xl bg-elev-1 p-6">
+      <Skeleton className="h-6 w-44 bg-elev-2" />
       <div className="mt-5 space-y-3">
         {Array.from({ length: rows }).map((_, i) => (
-          <Skeleton key={i} className="h-14 w-full" />
+          <Skeleton key={i} className="h-14 w-full bg-elev-2" />
         ))}
       </div>
     </div>

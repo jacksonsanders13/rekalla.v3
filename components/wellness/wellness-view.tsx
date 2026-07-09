@@ -15,9 +15,9 @@ import { CheckInForm, type CheckInValues } from "./check-in-form";
 // Chart accents are deliberately more saturated than the UI palette so the
 // marks don't read as gray (validated for contrast + CVD separation).
 export const CHART_COLORS = {
-  mood: "#2f8f5b",
-  sleep: "#3a6fd0",
-  energy: "#b3489f",
+  mood: "#30d158",
+  sleep: "#64d2ff",
+  energy: "#ff375f",
 } as const;
 
 export function moodLabel(value: number): string {
@@ -163,21 +163,21 @@ export function WellnessView({
             <CardHeader title="Recent notes" />
             <CardBody>
               {series.notes.length === 0 ? (
-                <p className="flex h-44 items-center justify-center text-center text-base text-sand-500">
+                <p className="flex h-44 items-center justify-center text-center text-base text-label-3">
                   Notes from daily check-ins will appear here.
                 </p>
               ) : (
                 <ul className="space-y-4">
                   {series.notes.map((entry) => (
-                    <li key={entry.id} className="border-l-2 border-sage-200 pl-4">
-                      <p className="text-sm font-medium text-sand-500">
+                    <li key={entry.id} className="border-l-2 border-tint-green/30 pl-4">
+                      <p className="text-sm font-medium text-label-3">
                         {fromDateKey(entry.entry_date).toLocaleDateString("en-US", {
                           weekday: "long",
                           month: "long",
                           day: "numeric",
                         })}
                       </p>
-                      <p className="mt-0.5 text-base text-sand-800">{entry.notes}</p>
+                      <p className="mt-0.5 text-base text-label-2">{entry.notes}</p>
                     </li>
                   ))}
                 </ul>
@@ -187,8 +187,8 @@ export function WellnessView({
         </div>
 
         {readOnly && series.mood.length === 0 && series.sleep.length === 0 && (
-          <div className="flex items-center gap-3 rounded-2xl border border-sand-200 bg-sand-100/60 p-5 text-base text-sand-700">
-            <HeartPulse className="size-6 shrink-0 text-sand-500" aria-hidden="true" />
+          <div className="flex items-center gap-3 rounded-2xl border border-white/15 bg-elev-2 p-5 text-base text-label-2">
+            <HeartPulse className="size-6 shrink-0 text-label-3" aria-hidden="true" />
             No check-ins recorded yet.
           </div>
         )}

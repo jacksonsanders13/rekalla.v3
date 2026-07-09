@@ -129,7 +129,7 @@ export function ReminderForm({
           name="daysOfWeek"
           render={({ field }) => (
             <fieldset>
-              <legend className="mb-2 block text-base font-semibold text-sand-900">
+              <legend className="mb-2 block text-base font-semibold text-label">
                 On which days?
               </legend>
               <div className="flex flex-wrap gap-2">
@@ -150,8 +150,8 @@ export function ReminderForm({
                       className={cn(
                         "min-h-12 min-w-14 rounded-xl border px-3 text-base font-semibold transition-colors",
                         selected
-                          ? "border-sage-600 bg-sage-600 text-white"
-                          : "border-sand-200 bg-white text-sand-700 hover:border-sand-300",
+                          ? "border-tint-green bg-tint-green text-black"
+                          : "border-white/15 bg-elev-2 text-label-2 hover:border-white/25",
                       )}
                     >
                       {day.label}
@@ -160,7 +160,7 @@ export function ReminderForm({
                 })}
               </div>
               {errors.daysOfWeek && (
-                <p role="alert" className="mt-2 text-sm font-medium text-clay-600">
+                <p role="alert" className="mt-2 text-sm font-medium text-tint-red">
                   {errors.daysOfWeek.message}
                 </p>
               )}

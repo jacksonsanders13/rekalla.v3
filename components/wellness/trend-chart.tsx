@@ -10,7 +10,7 @@ export interface TrendPoint {
 
 const WIDTH = 560;
 const HEIGHT = 200;
-const PAD = { top: 16, right: 16, bottom: 28, left: 40 };
+const PAD = { top: 16, right: 16, bottom: 28, left: 56 };
 
 function shortDate(dateKey: string): string {
   return fromDateKey(dateKey).toLocaleDateString("en-US", {
@@ -68,7 +68,7 @@ export function TrendChart({
 
   if (points.length === 0) {
     return (
-      <p className="flex h-44 items-center justify-center text-base text-sand-500">
+      <p className="flex h-44 items-center justify-center text-base text-label-3">
         No check-ins yet — trends appear after your first one.
       </p>
     );
@@ -114,7 +114,7 @@ export function TrendChart({
               x2={WIDTH - PAD.right}
               y1={tick.y}
               y2={tick.y}
-              stroke="#e5e1d8"
+              stroke="#3a3a3c"
               strokeWidth={1}
             />
             <text
@@ -122,7 +122,7 @@ export function TrendChart({
               y={tick.y + 4}
               textAnchor="end"
               fontSize={12}
-              fill="#83765f"
+              fill="#8e8e93"
             >
               {formatValue(tick.value)}
             </text>
@@ -135,7 +135,7 @@ export function TrendChart({
           y={HEIGHT - 8}
           textAnchor="start"
           fontSize={12}
-          fill="#83765f"
+          fill="#8e8e93"
         >
           {shortDate(points[0].dateKey)}
         </text>
@@ -145,7 +145,7 @@ export function TrendChart({
             y={HEIGHT - 8}
             textAnchor="end"
             fontSize={12}
-            fill="#83765f"
+            fill="#8e8e93"
           >
             {shortDate(points[points.length - 1].dateKey)}
           </text>
@@ -167,7 +167,7 @@ export function TrendChart({
           cy={last.y}
           r={4.5}
           fill={color}
-          stroke="#ffffff"
+          stroke="#1c1c1e"
           strokeWidth={2}
         />
 
@@ -178,7 +178,7 @@ export function TrendChart({
               x2={hovered.x}
               y1={PAD.top}
               y2={HEIGHT - PAD.bottom}
-              stroke="#b3a996"
+              stroke="#636366"
               strokeWidth={1}
               strokeDasharray="3 3"
             />
@@ -187,7 +187,7 @@ export function TrendChart({
               cy={hovered.y}
               r={5}
               fill={color}
-              stroke="#ffffff"
+              stroke="#1c1c1e"
               strokeWidth={2}
             />
           </g>
@@ -197,7 +197,7 @@ export function TrendChart({
       {hovered && hover !== null && (
         <div
           role="status"
-          className="pointer-events-none absolute -top-1 z-10 -translate-x-1/2 whitespace-nowrap rounded-lg bg-sand-950 px-3 py-1.5 text-sm font-medium text-white shadow-lifted"
+          className="pointer-events-none absolute -top-1 z-10 -translate-x-1/2 whitespace-nowrap rounded-lg bg-elev-3 px-3 py-1.5 text-sm font-medium text-label ring-1 ring-white/10"
           style={{ left: `${(hovered.x / WIDTH) * 100}%` }}
         >
           {shortDate(points[hover].dateKey)} ·{" "}

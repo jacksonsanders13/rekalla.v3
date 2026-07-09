@@ -30,22 +30,22 @@ interface CategoryMeta {
 }
 
 export const REMINDER_CATEGORIES: Record<ReminderCategory, CategoryMeta> = {
-  medication: { label: "Medication", icon: Pill, tone: "clay" },
-  meals: { label: "Meals", icon: UtensilsCrossed, tone: "honey" },
-  appointments: { label: "Appointments", icon: CalendarClock, tone: "sky" },
-  exercise: { label: "Exercise", icon: Footprints, tone: "sage" },
-  family_calls: { label: "Family calls", icon: PhoneCall, tone: "plum" },
-  custom: { label: "Personal", icon: Star, tone: "sand" },
+  medication: { label: "Medication", icon: Pill, tone: "pink" },
+  meals: { label: "Meals", icon: UtensilsCrossed, tone: "orange" },
+  appointments: { label: "Appointments", icon: CalendarClock, tone: "blue" },
+  exercise: { label: "Exercise", icon: Footprints, tone: "green" },
+  family_calls: { label: "Family calls", icon: PhoneCall, tone: "purple" },
+  custom: { label: "Personal", icon: Star, tone: "teal" },
 };
 
 export const VAULT_CATEGORIES: Record<VaultCategory, CategoryMeta> = {
-  family: { label: "Family", icon: Users, tone: "plum" },
-  contact: { label: "Contacts", icon: Contact, tone: "sky" },
-  doctor: { label: "Doctors", icon: Stethoscope, tone: "sage" },
-  medication: { label: "Medications", icon: Pill, tone: "clay" },
-  important_date: { label: "Important dates", icon: CalendarHeart, tone: "honey" },
-  emergency: { label: "Emergency", icon: Siren, tone: "clay" },
-  note: { label: "Notes", icon: StickyNote, tone: "sand" },
+  family: { label: "Family", icon: Users, tone: "purple" },
+  contact: { label: "Contacts", icon: Contact, tone: "blue" },
+  doctor: { label: "Doctors", icon: Stethoscope, tone: "teal" },
+  medication: { label: "Medications", icon: Pill, tone: "pink" },
+  important_date: { label: "Important dates", icon: CalendarHeart, tone: "yellow" },
+  emergency: { label: "Emergency", icon: Siren, tone: "red" },
+  note: { label: "Notes", icon: StickyNote, tone: "gray" },
 };
 
 export const ROUTINE_PERIODS: Record<
