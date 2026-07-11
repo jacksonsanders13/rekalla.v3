@@ -1,25 +1,27 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getSessionProfile } from "@/lib/session";
 import { SettingsView } from "@/components/settings/settings-view";
+import type { Profile } from "@/types";
 
 export const metadata: Metadata = { title: "Settings" };
 
 export default async function SettingsPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, profile } = await getSessionProfile();
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user!.id)
-    .single();
+  // Never bounce to /login here — the middleware already guarantees a signed-in
+  // user, and bouncing would get re-redirected to the dashboard. If the profile
+  // row is somehow missing, fall back to sensible defaults so Settings opens.
+  const safeProfile: Profile = profile ?? {
+    id: user.id,
+    full_name: "",
+    avatar_url: null,
+    phone: null,
+    timezone: "America/New_York",
+    account_type: "patient",
+    connect_code: null,
+    created_at: "",
+    updated_at: "",
+  };
 
-  if (!profile) {
-    redirect("/login");
-  }
-
-  return <SettingsView profile={profile} email={user!.email ?? ""} />;
+  return <SettingsView profile={safeProfile} email={user.email ?? ""} />;
 }

@@ -61,14 +61,16 @@ export function SettingsView({
 
   async function onSubmit(values: ProfileValues) {
     const supabase = createClient();
+    // Upsert (not update) so a missing profile row self-heals rather than
+    // silently saving nothing.
     const { error } = await supabase
       .from("profiles")
-      .update({
+      .upsert({
+        id: profile.id,
         full_name: values.fullName,
         phone: values.phone || null,
         timezone: values.timezone,
-      })
-      .eq("id", profile.id);
+      });
 
     if (error) {
       toast("Something went wrong. Please try again.", "error");
