@@ -7,17 +7,22 @@ import { cn } from "@/lib/utils";
 import type { Reminder } from "@/types";
 import { Badge } from "@/components/ui/badge";
 
-/** Management list of reminders: schedule summary plus edit/pause/delete. */
+/**
+ * List of reminders with schedule summaries. Shows edit/pause/delete controls
+ * when the viewer can manage; otherwise it's a read-only list (patient view).
+ */
 export function ReminderList({
   reminders,
   onEdit,
   onDelete,
   onToggleActive,
+  readOnly = false,
 }: {
   reminders: Reminder[];
-  onEdit: (reminder: Reminder) => void;
-  onDelete: (reminder: Reminder) => void;
-  onToggleActive: (reminder: Reminder) => void;
+  onEdit?: (reminder: Reminder) => void;
+  onDelete?: (reminder: Reminder) => void;
+  onToggleActive?: (reminder: Reminder) => void;
+  readOnly?: boolean;
 }) {
   return (
     <ul className="space-y-4">
@@ -44,40 +49,42 @@ export function ReminderList({
                 {!reminder.is_active && <Badge>Paused</Badge>}
               </div>
             </div>
-            <div className="flex gap-1.5">
-              <button
-                type="button"
-                aria-label={
-                  reminder.is_active
-                    ? `Pause ${reminder.title}`
-                    : `Resume ${reminder.title}`
-                }
-                onClick={() => onToggleActive(reminder)}
-                className="flex size-12 items-center justify-center rounded-xl text-label-3 transition-colors hover:bg-elev-2 hover:text-label-2"
-              >
-                {reminder.is_active ? (
-                  <PauseCircle className="size-6" aria-hidden="true" />
-                ) : (
-                  <PlayCircle className="size-6" aria-hidden="true" />
-                )}
-              </button>
-              <button
-                type="button"
-                aria-label={`Edit ${reminder.title}`}
-                onClick={() => onEdit(reminder)}
-                className="flex size-12 items-center justify-center rounded-xl text-label-3 transition-colors hover:bg-elev-2 hover:text-label-2"
-              >
-                <Pencil className="size-5" aria-hidden="true" />
-              </button>
-              <button
-                type="button"
-                aria-label={`Delete ${reminder.title}`}
-                onClick={() => onDelete(reminder)}
-                className="flex size-12 items-center justify-center rounded-xl text-label-3 transition-colors hover:bg-tint-red/10 hover:text-tint-red"
-              >
-                <Trash2 className="size-5" aria-hidden="true" />
-              </button>
-            </div>
+            {!readOnly && (
+              <div className="flex gap-1.5">
+                <button
+                  type="button"
+                  aria-label={
+                    reminder.is_active
+                      ? `Pause ${reminder.title}`
+                      : `Resume ${reminder.title}`
+                  }
+                  onClick={() => onToggleActive?.(reminder)}
+                  className="flex size-12 items-center justify-center rounded-xl text-label-3 transition-colors hover:bg-elev-2 hover:text-label-2"
+                >
+                  {reminder.is_active ? (
+                    <PauseCircle className="size-6" aria-hidden="true" />
+                  ) : (
+                    <PlayCircle className="size-6" aria-hidden="true" />
+                  )}
+                </button>
+                <button
+                  type="button"
+                  aria-label={`Edit ${reminder.title}`}
+                  onClick={() => onEdit?.(reminder)}
+                  className="flex size-12 items-center justify-center rounded-xl text-label-3 transition-colors hover:bg-elev-2 hover:text-label-2"
+                >
+                  <Pencil className="size-5" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  aria-label={`Delete ${reminder.title}`}
+                  onClick={() => onDelete?.(reminder)}
+                  className="flex size-12 items-center justify-center rounded-xl text-label-3 transition-colors hover:bg-tint-red/10 hover:text-tint-red"
+                >
+                  <Trash2 className="size-5" aria-hidden="true" />
+                </button>
+              </div>
+            )}
           </li>
         );
       })}

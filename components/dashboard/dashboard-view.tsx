@@ -9,7 +9,6 @@ import {
   CalendarCheck,
   Check,
   HeartPulse,
-  Plus,
   Sunrise,
 } from "lucide-react";
 import {
@@ -42,8 +41,8 @@ const RING_COLORS = {
 const QUICK_ACTIONS = [
   {
     href: "/reminders",
-    label: "Add a reminder",
-    icon: Plus,
+    label: "My reminders",
+    icon: BellRing,
     tone: "bg-white/10 text-white",
   },
   {

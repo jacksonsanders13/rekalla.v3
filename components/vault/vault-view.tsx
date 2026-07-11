@@ -43,7 +43,16 @@ function matchesSearch(item: VaultItem, query: string): boolean {
   return haystack.includes(query.toLowerCase());
 }
 
-export function VaultView({ userId }: { userId: string }) {
+export function VaultView({
+  userId,
+  canManage = true,
+  description = "The people, medications, and details that matter — always here when you need them.",
+}: {
+  userId: string;
+  /** When false, entries are view-only (patient); a caregiver manages them. */
+  canManage?: boolean;
+  description?: string;
+}) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [formOpen, setFormOpen] = useState(false);
@@ -102,18 +111,20 @@ export function VaultView({ userId }: { userId: string }) {
     <div>
       <PageHeader
         title="Memory Vault"
-        description="The people, medications, and details that matter — always here when you need them."
+        description={description}
         action={
-          <Button
-            size="lg"
-            onClick={() => {
-              setEditing(undefined);
-              setFormOpen(true);
-            }}
-          >
-            <Plus className="size-5" aria-hidden="true" />
-            Add entry
-          </Button>
+          canManage ? (
+            <Button
+              size="lg"
+              onClick={() => {
+                setEditing(undefined);
+                setFormOpen(true);
+              }}
+            >
+              <Plus className="size-5" aria-hidden="true" />
+              Add entry
+            </Button>
+          ) : undefined
         }
       />
 
@@ -183,12 +194,18 @@ export function VaultView({ userId }: { userId: string }) {
         <EmptyState
           icon={BookOpen}
           title="Your vault is empty"
-          description="Add family members, doctors, medications, and important dates so they're always one tap away."
+          description={
+            canManage
+              ? "Add family members, doctors, medications, and important dates so they're always one tap away."
+              : "Your caregiver hasn't added anything yet. People, doctors, and important details will appear here."
+          }
           action={
-            <Button onClick={() => setFormOpen(true)}>
-              <Plus className="size-5" aria-hidden="true" />
-              Add your first entry
-            </Button>
+            canManage ? (
+              <Button onClick={() => setFormOpen(true)}>
+                <Plus className="size-5" aria-hidden="true" />
+                Add your first entry
+              </Button>
+            ) : undefined
           }
         />
       ) : visible.length === 0 ? (
@@ -288,27 +305,29 @@ export function VaultView({ userId }: { userId: string }) {
                   )}
                 </div>
 
-                <div className="mt-4 flex justify-end gap-1 border-t border-white/10 pt-3">
-                  <button
-                    type="button"
-                    aria-label={`Edit ${item.title}`}
-                    onClick={() => {
-                      setEditing(item);
-                      setFormOpen(true);
-                    }}
-                    className="flex size-11 items-center justify-center rounded-xl text-label-4 transition-colors hover:bg-elev-2 hover:text-label-2"
-                  >
-                    <Pencil className="size-5" aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label={`Delete ${item.title}`}
-                    onClick={() => setDeleting(item)}
-                    className="flex size-11 items-center justify-center rounded-xl text-label-4 transition-colors hover:bg-tint-red/10 hover:text-tint-red"
-                  >
-                    <Trash2 className="size-5" aria-hidden="true" />
-                  </button>
-                </div>
+                {canManage && (
+                  <div className="mt-4 flex justify-end gap-1 border-t border-white/10 pt-3">
+                    <button
+                      type="button"
+                      aria-label={`Edit ${item.title}`}
+                      onClick={() => {
+                        setEditing(item);
+                        setFormOpen(true);
+                      }}
+                      className="flex size-11 items-center justify-center rounded-xl text-label-4 transition-colors hover:bg-elev-2 hover:text-label-2"
+                    >
+                      <Pencil className="size-5" aria-hidden="true" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`Delete ${item.title}`}
+                      onClick={() => setDeleting(item)}
+                      className="flex size-11 items-center justify-center rounded-xl text-label-4 transition-colors hover:bg-tint-red/10 hover:text-tint-red"
+                    >
+                      <Trash2 className="size-5" aria-hidden="true" />
+                    </button>
+                  </div>
+                )}
               </li>
             );
           })}

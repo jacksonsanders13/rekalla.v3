@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { requirePatient } from "@/lib/session";
 import { WellnessView } from "@/components/wellness/wellness-view";
 
 export const metadata: Metadata = { title: "Wellness" };
 
 export default async function WellnessPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await requirePatient();
 
-  return <WellnessView userId={user!.id} />;
+  // Wellness stays fully patient-controlled — it's their own daily check-in.
+  return <WellnessView userId={user.id} />;
 }

@@ -28,6 +28,7 @@ type Tab = "today" | "all";
 export function RemindersView({
   userId,
   actorId,
+  canManage = true,
   heading = "Reminders",
   description = "Everything on your list — check things off as you go.",
 }: {
@@ -35,6 +36,8 @@ export function RemindersView({
   userId: string;
   /** Who is making changes (differs when a caregiver manages a patient). */
   actorId: string;
+  /** When false, the viewer can complete/snooze but not add/edit/delete. */
+  canManage?: boolean;
   heading?: string;
   description?: string;
 }) {
@@ -109,16 +112,18 @@ export function RemindersView({
         title={heading}
         description={description}
         action={
-          <Button
-            size="lg"
-            onClick={() => {
-              setEditing(undefined);
-              setFormOpen(true);
-            }}
-          >
-            <Plus className="size-5" aria-hidden="true" />
-            New reminder
-          </Button>
+          canManage ? (
+            <Button
+              size="lg"
+              onClick={() => {
+                setEditing(undefined);
+                setFormOpen(true);
+              }}
+            >
+              <Plus className="size-5" aria-hidden="true" />
+              New reminder
+            </Button>
+          ) : undefined
         }
       />
 
@@ -157,12 +162,18 @@ export function RemindersView({
           <EmptyState
             icon={BellRing}
             title="Nothing scheduled today"
-            description="Enjoy the quiet day, or add a reminder to get started."
+            description={
+              canManage
+                ? "Enjoy the quiet day, or add a reminder to get started."
+                : "Enjoy the quiet day — there's nothing on the schedule."
+            }
             action={
-              <Button onClick={() => setFormOpen(true)}>
-                <Plus className="size-5" aria-hidden="true" />
-                Add a reminder
-              </Button>
+              canManage ? (
+                <Button onClick={() => setFormOpen(true)}>
+                  <Plus className="size-5" aria-hidden="true" />
+                  Add a reminder
+                </Button>
+              ) : undefined
             }
           />
         ) : (
@@ -183,17 +194,24 @@ export function RemindersView({
         <EmptyState
           icon={BellRing}
           title="No reminders yet"
-          description="Reminders you create will show up here, including ones added by your caregivers."
+          description={
+            canManage
+              ? "Reminders you add will show up here."
+              : "Your caregiver hasn't added any reminders yet. They'll appear here when they do."
+          }
           action={
-            <Button onClick={() => setFormOpen(true)}>
-              <Plus className="size-5" aria-hidden="true" />
-              Add your first reminder
-            </Button>
+            canManage ? (
+              <Button onClick={() => setFormOpen(true)}>
+                <Plus className="size-5" aria-hidden="true" />
+                Add your first reminder
+              </Button>
+            ) : undefined
           }
         />
       ) : (
         <ReminderList
           reminders={reminders.data ?? []}
+          readOnly={!canManage}
           onEdit={(reminder) => {
             setEditing(reminder);
             setFormOpen(true);

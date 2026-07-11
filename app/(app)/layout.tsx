@@ -1,20 +1,14 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getSessionProfile } from "@/lib/session";
 import { AppProviders } from "./providers";
 import { AppHeader } from "@/components/layout/app-header";
 import { TabBar } from "@/components/layout/tab-bar";
+import type { AccountType } from "@/types/database";
 
 export default async function AppLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
+  const { profile } = await getSessionProfile();
+  const accountType: AccountType = profile?.account_type ?? "patient";
 
   return (
     <AppProviders>
@@ -25,11 +19,11 @@ export default async function AppLayout({
         >
           Skip to main content
         </a>
-        <AppHeader />
+        <AppHeader accountType={accountType} />
         <main id="main" className="mx-auto w-full max-w-xl px-4 pb-32 pt-6">
           {children}
         </main>
-        <TabBar />
+        <TabBar accountType={accountType} />
       </div>
     </AppProviders>
   );

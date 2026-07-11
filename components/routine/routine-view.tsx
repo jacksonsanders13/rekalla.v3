@@ -101,7 +101,16 @@ function RoutineItemForm({
   );
 }
 
-export function RoutineView({ userId }: { userId: string }) {
+export function RoutineView({
+  userId,
+  canManage = true,
+  description,
+}: {
+  userId: string;
+  /** When false, the viewer can check items off but not add/edit/delete. */
+  canManage?: boolean;
+  description?: string;
+}) {
   const todayKey = toDateKey();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<RoutineItem | undefined>();
@@ -161,21 +170,24 @@ export function RoutineView({ userId }: { userId: string }) {
       <PageHeader
         title="Daily routine"
         description={
-          total > 0
+          description ??
+          (total > 0
             ? `${done} of ${total} done today — one step at a time.`
-            : "The gentle rhythm of your day, morning to evening."
+            : "The gentle rhythm of your day, morning to evening.")
         }
         action={
-          <Button
-            size="lg"
-            onClick={() => {
-              setEditing(undefined);
-              setFormOpen(true);
-            }}
-          >
-            <Plus className="size-5" aria-hidden="true" />
-            Add step
-          </Button>
+          canManage ? (
+            <Button
+              size="lg"
+              onClick={() => {
+                setEditing(undefined);
+                setFormOpen(true);
+              }}
+            >
+              <Plus className="size-5" aria-hidden="true" />
+              Add step
+            </Button>
+          ) : undefined
         }
       />
 
@@ -185,12 +197,18 @@ export function RoutineView({ userId }: { userId: string }) {
         <EmptyState
           icon={Sunrise}
           title="No routine yet"
-          description="Add the things you do every day — like breakfast, a walk, or evening medication — and check them off as you go."
+          description={
+            canManage
+              ? "Add the things you do every day — like breakfast, a walk, or evening medication — and check them off as you go."
+              : "Your caregiver hasn't set up a routine yet. Steps will appear here when they do."
+          }
           action={
-            <Button onClick={() => setFormOpen(true)}>
-              <Plus className="size-5" aria-hidden="true" />
-              Build my routine
-            </Button>
+            canManage ? (
+              <Button onClick={() => setFormOpen(true)}>
+                <Plus className="size-5" aria-hidden="true" />
+                Build my routine
+              </Button>
+            ) : undefined
           }
         />
       ) : (
@@ -270,27 +288,29 @@ export function RoutineView({ userId }: { userId: string }) {
                               </p>
                             )}
                           </div>
-                          <div className="flex gap-1">
-                            <button
-                              type="button"
-                              aria-label={`Edit ${item.title}`}
-                              onClick={() => {
-                                setEditing(item);
-                                setFormOpen(true);
-                              }}
-                              className="flex size-11 items-center justify-center rounded-xl text-label-4 transition-colors hover:bg-elev-2 hover:text-label-2"
-                            >
-                              <Pencil className="size-5" aria-hidden="true" />
-                            </button>
-                            <button
-                              type="button"
-                              aria-label={`Remove ${item.title}`}
-                              onClick={() => setDeleting(item)}
-                              className="flex size-11 items-center justify-center rounded-xl text-label-4 transition-colors hover:bg-tint-red/10 hover:text-tint-red"
-                            >
-                              <Trash2 className="size-5" aria-hidden="true" />
-                            </button>
-                          </div>
+                          {canManage && (
+                            <div className="flex gap-1">
+                              <button
+                                type="button"
+                                aria-label={`Edit ${item.title}`}
+                                onClick={() => {
+                                  setEditing(item);
+                                  setFormOpen(true);
+                                }}
+                                className="flex size-11 items-center justify-center rounded-xl text-label-4 transition-colors hover:bg-elev-2 hover:text-label-2"
+                              >
+                                <Pencil className="size-5" aria-hidden="true" />
+                              </button>
+                              <button
+                                type="button"
+                                aria-label={`Remove ${item.title}`}
+                                onClick={() => setDeleting(item)}
+                                className="flex size-11 items-center justify-center rounded-xl text-label-4 transition-colors hover:bg-tint-red/10 hover:text-tint-red"
+                              >
+                                <Trash2 className="size-5" aria-hidden="true" />
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </li>
                     );

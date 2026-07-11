@@ -13,6 +13,8 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
+export type AccountType = "patient" | "caregiver";
+
 export type ReminderCategory =
   | "medication"
   | "meals"
@@ -52,6 +54,8 @@ export type Database = {
           avatar_url: string | null;
           phone: string | null;
           timezone: string;
+          account_type: AccountType;
+          connect_code: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -61,6 +65,8 @@ export type Database = {
           avatar_url?: string | null;
           phone?: string | null;
           timezone?: string;
+          account_type?: AccountType;
+          connect_code?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -70,6 +76,8 @@ export type Database = {
           avatar_url?: string | null;
           phone?: string | null;
           timezone?: string;
+          account_type?: AccountType;
+          connect_code?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -389,8 +397,13 @@ export type Database = {
         Args: { other: string };
         Returns: boolean;
       };
+      connect_with_code: {
+        Args: { code: string };
+        Returns: Database["public"]["Tables"]["profiles"]["Row"];
+      };
     };
     Enums: {
+      account_type: AccountType;
       reminder_category: ReminderCategory;
       recurrence_type: RecurrenceType;
       completion_status: CompletionStatus;

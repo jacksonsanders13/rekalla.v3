@@ -9,6 +9,9 @@ export const loginSchema = z.object({
 });
 
 export const signupSchema = z.object({
+  accountType: z.enum(["patient", "caregiver"], {
+    required_error: "Please choose which describes you.",
+  }),
   fullName: z
     .string()
     .min(2, "Please enter your name.")

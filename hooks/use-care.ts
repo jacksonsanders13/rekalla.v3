@@ -2,94 +2,81 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
-import type { CareLink } from "@/types";
+import type { Profile } from "@/types";
 
-const careKey = (userId: string) => ["care-links", userId];
+/** A resolved link plus the person on the other side. */
+export interface LinkedPerson {
+  relationshipId: string;
+  profile: Profile;
+}
 
-/**
- * Every relationship the user participates in, from either side, with the
- * linked profiles resolved.
- */
-export function useCareLinks(userId: string, email: string) {
+const patientsKey = (caregiverId: string) => ["my-patients", caregiverId];
+const caregiversKey = (patientId: string) => ["my-caregivers", patientId];
+
+/** People a caregiver looks after (active links). */
+export function useMyPatients(caregiverId: string) {
   return useQuery({
-    queryKey: careKey(userId),
-    queryFn: async (): Promise<CareLink[]> => {
+    queryKey: patientsKey(caregiverId),
+    queryFn: async (): Promise<LinkedPerson[]> => {
       const supabase = createClient();
       const { data, error } = await supabase
         .from("care_relationships")
-        .select("*")
-        .or(
-          `patient_id.eq.${userId},caregiver_id.eq.${userId},invited_email.eq.${email.toLowerCase()}`,
-        )
-        .neq("status", "revoked")
+        .select("id, patient_id, profiles!care_relationships_patient_id_fkey(*)")
+        .eq("caregiver_id", caregiverId)
+        .eq("status", "active")
         .order("created_at");
       if (error) throw error;
-
-      // Resolve the profiles on both sides (RLS lets us read linked profiles).
-      const profileIds = Array.from(
-        new Set(
-          data.flatMap((row) => [row.patient_id, row.caregiver_id]).filter(
-            (id): id is string => Boolean(id),
-          ),
-        ),
-      );
-      const { data: profiles, error: profilesError } = await supabase
-        .from("profiles")
-        .select("*")
-        .in("id", profileIds);
-      if (profilesError) throw profilesError;
-
-      const byId = new Map(profiles.map((profile) => [profile.id, profile]));
-      return data.map((row) => ({
-        ...row,
-        patient: byId.get(row.patient_id) ?? null,
-        caregiver: row.caregiver_id ? (byId.get(row.caregiver_id) ?? null) : null,
-      }));
+      return (data ?? [])
+        .filter((row) => row.profiles)
+        .map((row) => ({
+          relationshipId: row.id,
+          profile: row.profiles as unknown as Profile,
+        }));
     },
   });
 }
 
-function useInvalidate(userId: string) {
-  const queryClient = useQueryClient();
-  return () => queryClient.invalidateQueries({ queryKey: careKey(userId) });
-}
-
-/** Patient invites a caregiver by email. */
-export function useInviteCaregiver(userId: string) {
-  const invalidate = useInvalidate(userId);
-  return useMutation({
-    mutationFn: async (input: { email: string; relationship: string | null }) => {
+/** Caregivers a patient has connected (active links). */
+export function useMyCaregivers(patientId: string) {
+  return useQuery({
+    queryKey: caregiversKey(patientId),
+    queryFn: async (): Promise<LinkedPerson[]> => {
       const supabase = createClient();
-      const { error } = await supabase.from("care_relationships").insert({
-        patient_id: userId,
-        invited_email: input.email.toLowerCase(),
-        relationship: input.relationship,
-      });
-      if (error) throw error;
-    },
-    onSuccess: invalidate,
-  });
-}
-
-/** Invitee accepts an invitation addressed to their email. */
-export function useAcceptInvitation(userId: string) {
-  const invalidate = useInvalidate(userId);
-  return useMutation({
-    mutationFn: async (relationshipId: string) => {
-      const supabase = createClient();
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("care_relationships")
-        .update({ caregiver_id: userId, status: "active" })
-        .eq("id", relationshipId);
+        .select("id, caregiver_id, profiles!care_relationships_caregiver_id_fkey(*)")
+        .eq("patient_id", patientId)
+        .eq("status", "active")
+        .order("created_at");
       if (error) throw error;
+      return (data ?? [])
+        .filter((row) => row.profiles)
+        .map((row) => ({
+          relationshipId: row.id,
+          profile: row.profiles as unknown as Profile,
+        }));
     },
-    onSuccess: invalidate,
   });
 }
 
-/** Either side ends the relationship (or the patient cancels an invite). */
-export function useEndRelationship(userId: string) {
-  const invalidate = useInvalidate(userId);
+/** A caregiver links to a patient by entering the patient's connect code. */
+export function useConnectWithCode(caregiverId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (code: string): Promise<Profile> => {
+      const supabase = createClient();
+      const { data, error } = await supabase.rpc("connect_with_code", { code });
+      if (error) throw error;
+      return data as Profile;
+    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: patientsKey(caregiverId) }),
+  });
+}
+
+/** Either side ends a relationship. */
+export function useEndRelationship(currentUserId: string) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (relationshipId: string) => {
       const supabase = createClient();
@@ -99,32 +86,9 @@ export function useEndRelationship(userId: string) {
         .eq("id", relationshipId);
       if (error) throw error;
     },
-    onSuccess: invalidate,
-  });
-}
-
-/**
- * Queue a missed-reminder email alert to the caregiver themselves, then ask
- * the dispatch endpoint to process the outbox right away.
- */
-export function useQueueMissedAlert() {
-  return useMutation({
-    mutationFn: async (input: {
-      caregiverId: string;
-      patientName: string;
-      missedTitles: string[];
-    }) => {
-      const supabase = createClient();
-      const { error } = await supabase.from("notifications").insert({
-        user_id: input.caregiverId,
-        channel: "email" as const,
-        title: `${input.patientName} has ${input.missedTitles.length} missed reminder${input.missedTitles.length === 1 ? "" : "s"} today`,
-        body: input.missedTitles.join(", "),
-        metadata: { kind: "missed_reminders" },
-      });
-      if (error) throw error;
-
-      await fetch("/api/notifications/dispatch", { method: "POST" });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: patientsKey(currentUserId) });
+      queryClient.invalidateQueries({ queryKey: caregiversKey(currentUserId) });
     },
   });
 }

@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { requirePatient } from "@/lib/session";
 import { RoutineView } from "@/components/routine/routine-view";
 
 export const metadata: Metadata = { title: "Daily routine" };
 
 export default async function RoutinePage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await requirePatient();
 
-  return <RoutineView userId={user!.id} />;
+  return (
+    <RoutineView
+      userId={user.id}
+      canManage={false}
+      description="Check off each step as your day goes on."
+    />
+  );
 }
