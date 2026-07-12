@@ -27,7 +27,7 @@ export function LoginForm() {
   async function onSubmit(values: LoginValues) {
     setServerError(null);
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: values.email,
       password: values.password,
     });
@@ -41,8 +41,22 @@ export function LoginForm() {
       return;
     }
 
+    // Route by role directly so caregivers never get stranded on the
+    // patient dashboard if a server-side redirect is cached.
     const next = searchParams.get("next");
-    router.push(next && next.startsWith("/") ? next : "/dashboard");
+    let destination = next && next.startsWith("/") ? next : "/dashboard";
+    if (data.user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("account_type")
+        .eq("id", data.user.id)
+        .single();
+      if (profile?.account_type === "caregiver") {
+        destination = "/caregiver";
+      }
+    }
+
+    router.push(destination);
     router.refresh();
   }
 

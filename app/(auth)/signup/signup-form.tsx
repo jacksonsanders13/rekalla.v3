@@ -62,13 +62,23 @@ export function SignupForm() {
       return;
     }
 
-    // When email confirmation is enabled, there's no session yet.
+    // When email confirmation is enabled, there's no session yet. The DB
+    // trigger records the chosen account type from signup metadata.
     if (!data.session) {
       setNeedsConfirmation(true);
       return;
     }
 
-    router.push("/dashboard");
+    // Write the chosen role straight to the profile so it never depends on
+    // the trigger firing, then send the user to the matching home screen.
+    if (data.user) {
+      await supabase
+        .from("profiles")
+        .update({ account_type: values.accountType })
+        .eq("id", data.user.id);
+    }
+
+    router.push(values.accountType === "caregiver" ? "/caregiver" : "/dashboard");
     router.refresh();
   }
 
