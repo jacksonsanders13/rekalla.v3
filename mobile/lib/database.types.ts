@@ -401,6 +401,10 @@ export type Database = {
         Args: { code: string };
         Returns: Database["public"]["Tables"]["profiles"]["Row"];
       };
+      delete_my_account: {
+        Args: Record<string, never>;
+        Returns: undefined;
+      };
     };
     Enums: {
       account_type: AccountType;

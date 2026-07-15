@@ -4,6 +4,7 @@ import { supabase } from "../lib/supabase";
 import { useSession } from "../lib/session";
 import { colors, font } from "../lib/theme";
 import { Screen, Card, Button } from "../components/ui";
+import { DeleteAccount } from "../components/delete-account";
 
 /** Shared settings screen (patients reach it from the Summary header). */
 export default function Settings() {
@@ -21,6 +22,7 @@ export default function Settings() {
         <Text style={styles.email}>{session?.user.email}</Text>
         <Button label="Sign out" variant="secondary" onPress={signOut} />
       </Card>
+      <DeleteAccount />
     </Screen>
   );
 }

@@ -4,6 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { useSession } from "../../lib/session";
 import { colors, font } from "../../lib/theme";
 import { Screen, Card, Button } from "../../components/ui";
+import { DeleteAccount } from "../../components/delete-account";
 
 export default function CaregiverAccount() {
   const { session, profile } = useSession();
@@ -20,6 +21,7 @@ export default function CaregiverAccount() {
         <Text style={styles.email}>{session?.user.email}</Text>
         <Button label="Sign out" variant="secondary" onPress={signOut} />
       </Card>
+      <DeleteAccount />
     </Screen>
   );
 }
