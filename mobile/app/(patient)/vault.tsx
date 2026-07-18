@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Linking, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Image, Linking, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSession } from "../../lib/session";
 import { colors, font, radius, spacing } from "../../lib/theme";
@@ -65,6 +65,13 @@ export default function Vault() {
           const meta = CATEGORY_META[item.category] ?? CATEGORY_META.note;
           return (
             <View key={item.id} style={styles.card}>
+              {item.photo_url ? (
+                <Image
+                  source={{ uri: item.photo_url }}
+                  style={styles.photo}
+                  accessibilityLabel={`Photo of ${item.title}`}
+                />
+              ) : null}
               <View style={styles.top}>
                 <View style={[styles.icon, { backgroundColor: `${meta.color}26` }]}>
                   <Ionicons name={meta.icon} size={22} color={meta.color} />
@@ -115,6 +122,12 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     padding: spacing(4),
     gap: spacing(3),
+  },
+  photo: {
+    width: "100%",
+    height: 200,
+    borderRadius: radius.md,
+    backgroundColor: colors.elev2,
   },
   top: { flexDirection: "row", gap: spacing(3), alignItems: "center" },
   icon: {

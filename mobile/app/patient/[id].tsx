@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useSession } from "../../lib/session";
 import { colors, font, radius, spacing } from "../../lib/theme";
 import { firstName, toDateKey } from "../../lib/utils";
+import { pickPhoto, uploadVaultPhoto, type PickedPhoto } from "../../lib/photos";
 import { occurrencesFor, completionSummary, describeSchedule } from "../../lib/reminders";
 import {
   useReminders,
@@ -382,6 +383,8 @@ function VaultSection({
   patientId: string;
   name: string;
 }) {
+  const { session } = useSession();
+  const caregiverId = session?.user.id ?? "";
   const items = useVaultItems(patientId);
   const save = useSaveVaultItem(patientId);
   const remove = useDeleteVaultItem(patientId);
@@ -392,13 +395,34 @@ function VaultSection({
   const [subtitle, setSubtitle] = useState("");
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
+  const [photo, setPhoto] = useState<PickedPhoto | null>(null);
+  const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
   const all = items.data ?? [];
 
-  function handleAdd() {
+  async function handlePickPhoto() {
+    setFormError(null);
+    const picked = await pickPhoto();
+    if (picked) setPhoto(picked);
+  }
+
+  async function handleAdd() {
     setFormError(null);
     if (!title.trim()) return setFormError("Please give this a name.");
+    setSaving(true);
+    let photoUrl: string | null = null;
+    if (photo) {
+      try {
+        photoUrl = await uploadVaultPhoto(caregiverId, photo);
+      } catch {
+        setSaving(false);
+        setFormError(
+          "The photo didn't upload. Check your connection and try again, or remove the photo.",
+        );
+        return;
+      }
+    }
     save.mutate(
       {
         user_id: patientId,
@@ -407,6 +431,7 @@ function VaultSection({
         subtitle: subtitle.trim() || null,
         phone: phone.trim() || null,
         notes: notes.trim() || null,
+        photo_url: photoUrl,
       },
       {
         onSuccess: () => {
@@ -414,9 +439,14 @@ function VaultSection({
           setSubtitle("");
           setPhone("");
           setNotes("");
+          setPhoto(null);
           setShowForm(false);
+          setSaving(false);
         },
-        onError: (error) => setFormError(error.message),
+        onError: (error) => {
+          setSaving(false);
+          setFormError(error.message);
+        },
       },
     );
   }
@@ -476,9 +506,33 @@ function VaultSection({
             style={[styles.input, styles.multiline]}
             multiline
           />
+          <Text style={styles.fieldLabel}>Photo (optional)</Text>
+          {photo ? (
+            <View style={styles.photoRow}>
+              <Image source={{ uri: photo.previewUri }} style={styles.photoPreview} />
+              <View style={{ flex: 1, gap: spacing(2) }}>
+                <Button
+                  label="Choose a different photo"
+                  variant="secondary"
+                  onPress={handlePickPhoto}
+                />
+                <Button
+                  label="Remove photo"
+                  variant="ghost"
+                  onPress={() => setPhoto(null)}
+                />
+              </View>
+            </View>
+          ) : (
+            <Button
+              label="Add a photo"
+              variant="secondary"
+              onPress={handlePickPhoto}
+            />
+          )}
           <Button
             label="Save to memory bank"
-            loading={save.isPending}
+            loading={saving || save.isPending}
             onPress={handleAdd}
           />
         </Card>
@@ -501,6 +555,7 @@ function VaultSection({
               VAULT_CATEGORIES.find((c) => c.value === item.category)?.label ||
               "Note"
             }
+            photoUrl={item.photo_url}
             onDelete={() => remove.mutate(item.id)}
           />
         ))
@@ -549,14 +604,19 @@ function Chips<T extends string>({
 function ManageRow({
   title,
   meta,
+  photoUrl,
   onDelete,
 }: {
   title: string;
   meta: string;
+  photoUrl?: string | null;
   onDelete: () => void;
 }) {
   return (
     <View style={styles.row}>
+      {photoUrl ? (
+        <Image source={{ uri: photoUrl }} style={styles.rowPhoto} />
+      ) : null}
       <View style={{ flex: 1 }}>
         <Text style={styles.rowTitle}>{title}</Text>
         <Text style={styles.rowMeta}>{meta}</Text>
@@ -625,6 +685,23 @@ const styles = StyleSheet.create({
   },
   rowTitle: { color: colors.label, fontSize: font.base, fontWeight: "700" },
   rowMeta: { color: colors.label3, fontSize: font.sm, marginTop: 2 },
+  rowPhoto: {
+    width: 52,
+    height: 52,
+    borderRadius: radius.md,
+    backgroundColor: colors.elev2,
+  },
+  photoRow: {
+    flexDirection: "row",
+    gap: spacing(3),
+    alignItems: "center",
+  },
+  photoPreview: {
+    width: 96,
+    height: 96,
+    borderRadius: radius.md,
+    backgroundColor: colors.elev2,
+  },
   deleteButton: {
     width: 44,
     height: 44,
