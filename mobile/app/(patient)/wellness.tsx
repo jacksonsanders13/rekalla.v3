@@ -37,6 +37,7 @@ export default function Wellness() {
   }, [today?.id]);
 
   function adjustSleep(delta: number) {
+    setSaved(false);
     setSleep((current) => {
       const next = (current ?? 7) + delta;
       return Math.min(24, Math.max(0, Math.round(next * 2) / 2));
@@ -71,7 +72,10 @@ export default function Wellness() {
                 accessibilityRole="button"
                 accessibilityLabel={option.label}
                 accessibilityState={{ selected }}
-                onPress={() => setMood(selected ? null : option.value)}
+                onPress={() => {
+                  setSaved(false);
+                  setMood(selected ? null : option.value);
+                }}
                 style={[styles.mood, selected && styles.moodSelected]}
               >
                 <Text style={styles.moodEmoji}>{option.emoji}</Text>
@@ -112,7 +116,10 @@ export default function Wellness() {
                 accessibilityRole="button"
                 accessibilityLabel={`Energy level ${value} of 5`}
                 accessibilityState={{ selected }}
-                onPress={() => setEnergy(selected ? null : value)}
+                onPress={() => {
+                  setSaved(false);
+                  setEnergy(selected ? null : value);
+                }}
                 style={[styles.energy, selected && styles.moodSelected]}
               >
                 <Text style={styles.energyText}>{value}</Text>
