@@ -91,7 +91,7 @@
   .phone-sm { width: min(260px, 70vw); }
 
   /* ---- sections ---- */
-  section { padding: 72px 0; }
+  section { padding: 72px 0; scroll-margin-top: 80px; }
   .section-head { max-width: 34em; margin-bottom: 48px; }
   .section-head h2 { font-size: clamp(28px, 4vw, 38px); letter-spacing: -0.8px; line-height: 1.15; }
   .section-head p { color: var(--label3); font-size: 18px; margin-top: 12px; }
@@ -157,7 +157,40 @@
     .steps, .principles { grid-template-columns: 1fr; }
     .nav-links a.link { display: none; }
     section { padding: 52px 0; }
+    .join-form { flex-direction: column; }
   }
+
+  /* ---- join / waitlist ---- */
+  .join { text-align: center; }
+  .join h2 { font-size: clamp(28px, 4vw, 38px); letter-spacing: -0.8px; }
+  .join p { color: var(--label3); font-size: 18px; margin: 12px auto 28px; max-width: 34em; }
+  .join-form { display: flex; gap: 12px; max-width: 460px; margin: 0 auto; }
+  .join-form input {
+    flex: 1; min-height: 52px; padding: 0 18px;
+    border-radius: 14px; border: 1px solid var(--elev3);
+    background: var(--elev1); color: var(--label);
+    font-size: 16px; font-family: inherit;
+  }
+  .join-form input::placeholder { color: var(--label4); }
+  .join-form input:focus { outline: 2px solid var(--label3); outline-offset: 1px; }
+  .join-form .btn { white-space: nowrap; }
+  .join-msg { min-height: 24px; margin-top: 16px; font-size: 15px; font-weight: 600; color: var(--label2); }
+
+  /* ---- faq ---- */
+  .faq { display: grid; gap: 12px; max-width: 760px; }
+  .faq details {
+    background: var(--elev1); border-radius: var(--radius);
+    padding: 4px 22px;
+  }
+  .faq summary {
+    cursor: pointer; list-style: none; padding: 18px 0;
+    font-size: 18px; font-weight: 600; color: var(--label);
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; color: var(--label3); font-size: 24px; font-weight: 400; }
+  .faq details[open] summary::after { content: "\2013"; }
+  .faq details p { color: var(--label3); font-size: 16px; padding: 0 0 20px; margin: 0; }
 </style>
 </head>
 <body>
@@ -171,8 +204,8 @@
     <div class="nav-links">
       <a class="link" href="#features">Features</a>
       <a class="link" href="#how">How it works</a>
-      <a class="link" href="https://jacksonsanders13.github.io/rekalla/privacy/">Privacy</a>
-      <a class="btn btn-primary" href="mailto:madmanjack8@gmail.com?subject=Rekalla%20early%20access">Get early access</a>
+      <a class="link" href="/privacy">Privacy</a>
+      <a class="btn btn-primary" href="#join">Get early access</a>
     </div>
   </div>
 </nav>
@@ -186,7 +219,7 @@
       people who love them a simple way to help from anywhere.
     </p>
     <div class="cta-row">
-      <a class="btn btn-primary" href="mailto:madmanjack8@gmail.com?subject=Rekalla%20early%20access">Get early access</a>
+      <a class="btn btn-primary" href="#join">Get early access</a>
       <a class="btn btn-secondary" href="#features">See how it works</a>
     </div>
   </div>
@@ -304,12 +337,60 @@
   </div>
 </section>
 
+<section id="join" class="wrap join">
+  <h2>Be first to know when Rekalla launches.</h2>
+  <p>
+    Leave your email and we&apos;ll let you know the moment it&apos;s on the
+    App Store. No spam — just one message when it&apos;s ready.
+  </p>
+  <form id="waitlist-form" class="join-form" novalidate>
+    <input
+      type="email"
+      id="waitlist-email"
+      required
+      autocomplete="email"
+      placeholder="you@example.com"
+      aria-label="Your email address"
+    >
+    <button type="submit" class="btn btn-primary">Notify me</button>
+  </form>
+  <p id="join-msg" class="join-msg" role="status" aria-live="polite"></p>
+</section>
+
+<section id="faq" class="wrap">
+  <div class="section-head">
+    <h2>Questions</h2>
+  </div>
+  <div class="faq">
+    <details>
+      <summary>Is Rekalla free?</summary>
+      <p>Rekalla is free while it&apos;s in early access. If that ever changes, we&apos;ll tell you well ahead of time.</p>
+    </details>
+    <details>
+      <summary>Do both people need the app?</summary>
+      <p>No. A Loved One can use Rekalla entirely on their own. A caregiver is optional — if there is one, they get their own account and connect with a simple code.</p>
+    </details>
+    <details>
+      <summary>Is my information private?</summary>
+      <p>Yes. Only you and the caregivers you choose to connect with can see your information. No ads, no tracking, and nothing is ever sold. You can delete your account and everything in it at any time.</p>
+    </details>
+    <details>
+      <summary>What devices does it work on?</summary>
+      <p>Rekalla is launching on iPhone first. Support for more devices is planned.</p>
+    </details>
+    <details>
+      <summary>Is Rekalla a medical app?</summary>
+      <p>No. Rekalla is a memory and coordination aid. It is not a medical device and does not provide medical advice, diagnosis, or treatment.</p>
+    </details>
+  </div>
+</section>
+
 <footer>
   <div class="wrap">
     <div class="foot">
       <a class="brand" href="#top"><img src="logo.svg" alt="">Rekalla</a>
       <div class="foot-links">
-        <a href="https://jacksonsanders13.github.io/rekalla/privacy/">Privacy Policy</a>
+        <a href="/privacy">Privacy Policy</a>
         <a href="mailto:madmanjack8@gmail.com">Contact</a>
       </div>
     </div>
@@ -320,6 +401,50 @@
     </p>
   </div>
 </footer>
+
+<script>
+  // Waitlist sign-up. Posts to a Supabase table that only allows inserts —
+  // the anon key is a public, insert-only key protected by row-level security.
+  (function () {
+    var SUPABASE_URL = "https://mhahpfcjxnoelcthdsss.supabase.co";
+    var SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oYWhwZmNqeG5vZWxjdGhkc3NzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1ODcyODQsImV4cCI6MjA5OTE2MzI4NH0.ev4eaDbr5JLZXR0aJVCLH1VGk1-riPwmaq3c0PUNV1c";
+    var form = document.getElementById("waitlist-form");
+    var input = document.getElementById("waitlist-email");
+    var msg = document.getElementById("join-msg");
+    var EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+    if (!form) return;
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var email = (input.value || "").trim();
+      if (!EMAIL_RE.test(email)) {
+        msg.textContent = "Please enter a valid email address.";
+        return;
+      }
+      msg.textContent = "Adding you…";
+      fetch(SUPABASE_URL + "/rest/v1/waitlist", {
+        method: "POST",
+        headers: {
+          apikey: SUPABASE_ANON,
+          Authorization: "Bearer " + SUPABASE_ANON,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify({ email: email }),
+      })
+        .then(function (res) {
+          if (res.ok) {
+            form.reset();
+            msg.textContent = "You're on the list — thank you!";
+          } else {
+            msg.textContent = "Hmm, that didn't work. Please try again.";
+          }
+        })
+        .catch(function () {
+          msg.textContent = "Hmm, that didn't work. Please try again.";
+        });
+    });
+  })();
+</script>
 
 </body>
 </html>
