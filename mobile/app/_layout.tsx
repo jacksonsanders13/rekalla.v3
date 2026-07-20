@@ -1,12 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SessionProvider } from "../lib/session";
 import { TermsGate } from "../components/terms-gate";
+import { WelcomeTour } from "../components/welcome-tour";
+import { configureNotifications } from "../lib/notifications";
 import { colors } from "../lib/theme";
 
 export default function RootLayout() {
+  const [termsResolved, setTermsResolved] = useState(false);
+
+  useEffect(() => {
+    configureNotifications();
+  }, []);
+
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -34,7 +42,8 @@ export default function RootLayout() {
           <Stack.Screen name="settings" options={{ title: "Settings" }} />
           <Stack.Screen name="patient/[id]" options={{ title: "" }} />
         </Stack>
-        <TermsGate />
+        <WelcomeTour enabled={termsResolved} />
+        <TermsGate onResolved={() => setTermsResolved(true)} />
       </SessionProvider>
     </QueryClientProvider>
   );

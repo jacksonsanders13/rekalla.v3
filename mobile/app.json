@@ -39,6 +39,12 @@
         {
           "photosPermission": "Rekalla uses your photo library so you can add pictures of family, doctors, and important things to the Memory Vault."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#000000"
+        }
       ]
     ]
   }

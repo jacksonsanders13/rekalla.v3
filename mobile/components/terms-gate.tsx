@@ -29,7 +29,7 @@ const keyFor = (userId: string) => `rekalla:terms-accepted:${TERMS_VERSION}:${us
  * The copy here is a placeholder and will be replaced with the real, legally
  * binding Terms of Use and Privacy Policy before launch.
  */
-export function TermsGate() {
+export function TermsGate({ onResolved }: { onResolved?: () => void }) {
   const { session, loading } = useSession();
   const userId = session?.user.id;
 
@@ -47,8 +47,10 @@ export function TermsGate() {
     }
     AsyncStorage.getItem(keyFor(userId)).then((value) => {
       if (cancelled) return;
-      setAccepted(value === "1");
+      const already = value === "1";
+      setAccepted(already);
       setChecked(true);
+      if (already) onResolved?.();
     });
     return () => {
       cancelled = true;
@@ -66,6 +68,7 @@ export function TermsGate() {
     if (!userId) return;
     await AsyncStorage.setItem(keyFor(userId), "1");
     setAccepted(true);
+    onResolved?.();
   }
 
   const visible = Boolean(userId) && checked && !accepted;

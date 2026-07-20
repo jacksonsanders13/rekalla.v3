@@ -80,6 +80,12 @@ export default function SignIn() {
 
         <Button label="Log in" loading={busy} onPress={handleSignIn} />
 
+        <Link href="/(auth)/forgot-password" asChild>
+          <Pressable accessibilityRole="link" style={styles.switchLink}>
+            <Text style={styles.forgotText}>Forgot your password?</Text>
+          </Pressable>
+        </Link>
+
         <Link href="/(auth)/sign-up" asChild>
           <Pressable accessibilityRole="link" style={styles.switchLink}>
             <Text style={styles.switchText}>
@@ -101,4 +107,5 @@ const styles = StyleSheet.create({
   switchLink: { minHeight: 44, alignItems: "center", justifyContent: "center" },
   switchText: { color: colors.label3, fontSize: font.base },
   switchStrong: { color: colors.label, fontWeight: "700" },
+  forgotText: { color: colors.label2, fontSize: font.base, fontWeight: "600" },
 });

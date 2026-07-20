@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -17,6 +17,7 @@ import {
 import { Screen, Card, SectionTitle, EmptyNote, Loading } from "../../components/ui";
 import { ActivityRings } from "../../components/rings";
 import { OccurrenceRow } from "../../components/occurrence-row";
+import { syncReminderNotifications } from "../../lib/notifications";
 
 export default function Summary() {
   const { session, profile } = useSession();
@@ -29,6 +30,12 @@ export default function Summary() {
   const routineItems = useRoutineItems(userId);
   const routineDone = useRoutineCompletions(userId, todayKey);
   const wellness = useWellnessEntries(userId, 7);
+
+  useEffect(() => {
+    if (reminders.data) {
+      syncReminderNotifications(reminders.data);
+    }
+  }, [reminders.data]);
 
   const occurrences = useMemo(
     () => occurrencesFor(reminders.data ?? [], events.data ?? [], todayKey),
