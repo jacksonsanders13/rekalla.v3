@@ -11,17 +11,23 @@ import {
   useReminders,
   useReminderEvents,
   useSaveReminder,
+  useUpdateReminder,
   useDeleteReminder,
   useRoutineItems,
   useSaveRoutineItem,
+  useUpdateRoutineItem,
   useDeleteRoutineItem,
   useVaultItems,
   useSaveVaultItem,
+  useUpdateVaultItem,
   useDeleteVaultItem,
 } from "../../hooks/data";
 import { Screen, Card, Button, SectionTitle, EmptyNote, Loading } from "../../components/ui";
 import { OccurrenceRow } from "../../components/occurrence-row";
 import type {
+  Reminder,
+  RoutineItem,
+  VaultItem,
   ReminderCategory,
   RoutinePeriod,
   VaultCategory,
@@ -49,6 +55,8 @@ const RECURRENCES = [
   { value: "once", label: "Just once" },
   { value: "weekly", label: "Weekly" },
 ] as const;
+
+type FormRecurrence = (typeof RECURRENCES)[number]["value"];
 
 const PERIODS: { value: RoutinePeriod; label: string }[] = [
   { value: "morning", label: "Morning" },
@@ -130,14 +138,15 @@ function RemindersSection({
   const reminders = useReminders(patientId);
   const events = useReminderEvents(patientId, todayKey);
   const save = useSaveReminder(patientId);
+  const update = useUpdateReminder(patientId);
   const remove = useDeleteReminder(patientId);
 
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState<ReminderCategory>("medication");
   const [time, setTime] = useState("09:00");
-  const [recurrence, setRecurrence] =
-    useState<(typeof RECURRENCES)[number]["value"]>("daily");
+  const [recurrence, setRecurrence] = useState<FormRecurrence>("daily");
   const [formError, setFormError] = useState<string | null>(null);
 
   const occurrences = useMemo(
@@ -147,31 +156,64 @@ function RemindersSection({
   const summary = completionSummary(occurrences);
   const loading = reminders.isLoading || events.isLoading;
 
-  function handleAdd() {
+  function reset() {
+    setEditingId(null);
+    setTitle("");
+    setCategory("medication");
+    setTime("09:00");
+    setRecurrence("daily");
+    setFormError(null);
+    setShowForm(false);
+  }
+
+  function startEdit(reminder: Reminder) {
+    setEditingId(reminder.id);
+    setTitle(reminder.title);
+    setCategory(reminder.category);
+    setTime(reminder.time_of_day);
+    setRecurrence(
+      RECURRENCES.some((r) => r.value === reminder.recurrence)
+        ? (reminder.recurrence as FormRecurrence)
+        : "daily",
+    );
+    setFormError(null);
+    setShowForm(true);
+  }
+
+  function handleSubmit() {
     setFormError(null);
     if (!title.trim()) return setFormError("Please give the reminder a name.");
     if (!TIME_RE.test(time.trim())) {
       return setFormError("Time must look like 08:00 or 19:30.");
     }
-    save.mutate(
-      {
-        user_id: patientId,
-        created_by: caregiverId,
-        title: title.trim(),
-        category,
-        time_of_day: time.trim(),
-        recurrence,
-        days_of_week: [],
-        start_date: todayKey,
-      },
-      {
-        onSuccess: () => {
-          setTitle("");
-          setShowForm(false);
+    if (editingId) {
+      update.mutate(
+        {
+          id: editingId,
+          values: {
+            title: title.trim(),
+            category,
+            time_of_day: time.trim(),
+            recurrence,
+          },
         },
-        onError: (error) => setFormError(error.message),
-      },
-    );
+        { onSuccess: reset, onError: (e) => setFormError(e.message) },
+      );
+    } else {
+      save.mutate(
+        {
+          user_id: patientId,
+          created_by: caregiverId,
+          title: title.trim(),
+          category,
+          time_of_day: time.trim(),
+          recurrence,
+          days_of_week: [],
+          start_date: todayKey,
+        },
+        { onSuccess: reset, onError: (e) => setFormError(e.message) },
+      );
+    }
   }
 
   return (
@@ -187,11 +229,12 @@ function RemindersSection({
       <Button
         label={showForm ? "Cancel" : `Add reminder for ${name}`}
         variant={showForm ? "secondary" : "primary"}
-        onPress={() => setShowForm((v) => !v)}
+        onPress={() => (showForm ? reset() : setShowForm(true))}
       />
 
       {showForm && (
         <Card>
+          {editingId && <Text style={styles.editingLabel}>Editing reminder</Text>}
           {formError && <Text style={styles.error}>{formError}</Text>}
           <Text style={styles.fieldLabel}>
             What should we remind {name} about?
@@ -220,7 +263,11 @@ function RemindersSection({
             value={recurrence}
             onChange={setRecurrence}
           />
-          <Button label="Add reminder" loading={save.isPending} onPress={handleAdd} />
+          <Button
+            label={editingId ? "Save changes" : "Add reminder"}
+            loading={save.isPending || update.isPending}
+            onPress={handleSubmit}
+          />
         </Card>
       )}
 
@@ -248,6 +295,8 @@ function RemindersSection({
             key={reminder.id}
             title={reminder.title}
             meta={describeSchedule(reminder)}
+            active={editingId === reminder.id}
+            onEdit={() => startEdit(reminder)}
             onDelete={() => remove.mutate(reminder.id)}
           />
         ))
@@ -269,9 +318,11 @@ function RoutineSection({
 }) {
   const items = useRoutineItems(patientId);
   const save = useSaveRoutineItem(patientId);
+  const update = useUpdateRoutineItem(patientId);
   const remove = useDeleteRoutineItem(patientId);
 
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [period, setPeriod] = useState<RoutinePeriod>("morning");
   const [time, setTime] = useState("");
@@ -279,28 +330,53 @@ function RoutineSection({
 
   const all = items.data ?? [];
 
-  function handleAdd() {
+  function reset() {
+    setEditingId(null);
+    setTitle("");
+    setPeriod("morning");
+    setTime("");
+    setFormError(null);
+    setShowForm(false);
+  }
+
+  function startEdit(item: RoutineItem) {
+    setEditingId(item.id);
+    setTitle(item.title);
+    setPeriod(item.period);
+    setTime(item.time_of_day ?? "");
+    setFormError(null);
+    setShowForm(true);
+  }
+
+  function handleSubmit() {
     setFormError(null);
     if (!title.trim()) return setFormError("Please name this step.");
     if (time.trim() && !TIME_RE.test(time.trim())) {
       return setFormError("Time must look like 08:00, or leave it blank.");
     }
-    save.mutate(
-      {
-        user_id: patientId,
-        title: title.trim(),
-        period,
-        time_of_day: time.trim() || null,
-      },
-      {
-        onSuccess: () => {
-          setTitle("");
-          setTime("");
-          setShowForm(false);
+    if (editingId) {
+      update.mutate(
+        {
+          id: editingId,
+          values: {
+            title: title.trim(),
+            period,
+            time_of_day: time.trim() || null,
+          },
         },
-        onError: (error) => setFormError(error.message),
-      },
-    );
+        { onSuccess: reset, onError: (e) => setFormError(e.message) },
+      );
+    } else {
+      save.mutate(
+        {
+          user_id: patientId,
+          title: title.trim(),
+          period,
+          time_of_day: time.trim() || null,
+        },
+        { onSuccess: reset, onError: (e) => setFormError(e.message) },
+      );
+    }
   }
 
   return (
@@ -312,11 +388,12 @@ function RoutineSection({
       <Button
         label={showForm ? "Cancel" : `Add a routine step for ${name}`}
         variant={showForm ? "secondary" : "primary"}
-        onPress={() => setShowForm((v) => !v)}
+        onPress={() => (showForm ? reset() : setShowForm(true))}
       />
 
       {showForm && (
         <Card>
+          {editingId && <Text style={styles.editingLabel}>Editing step</Text>}
           {formError && <Text style={styles.error}>{formError}</Text>}
           <Text style={styles.fieldLabel}>What&apos;s the step?</Text>
           <TextInput
@@ -339,7 +416,11 @@ function RoutineSection({
             style={styles.input}
             keyboardType="numbers-and-punctuation"
           />
-          <Button label="Add step" loading={save.isPending} onPress={handleAdd} />
+          <Button
+            label={editingId ? "Save changes" : "Add step"}
+            loading={save.isPending || update.isPending}
+            onPress={handleSubmit}
+          />
         </Card>
       )}
 
@@ -361,6 +442,8 @@ function RoutineSection({
                   meta={
                     item.time_of_day ? `around ${item.time_of_day}` : "any time"
                   }
+                  active={editingId === item.id}
+                  onEdit={() => startEdit(item)}
                   onDelete={() => remove.mutate(item.id)}
                 />
               ))}
@@ -387,19 +470,49 @@ function VaultSection({
   const caregiverId = session?.user.id ?? "";
   const items = useVaultItems(patientId);
   const save = useSaveVaultItem(patientId);
+  const update = useUpdateVaultItem(patientId);
   const remove = useDeleteVaultItem(patientId);
 
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [category, setCategory] = useState<VaultCategory>("family");
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [photo, setPhoto] = useState<PickedPhoto | null>(null);
+  const [existingPhotoUrl, setExistingPhotoUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
   const all = items.data ?? [];
+
+  function reset() {
+    setEditingId(null);
+    setCategory("family");
+    setTitle("");
+    setSubtitle("");
+    setPhone("");
+    setNotes("");
+    setPhoto(null);
+    setExistingPhotoUrl(null);
+    setSaving(false);
+    setFormError(null);
+    setShowForm(false);
+  }
+
+  function startEdit(item: VaultItem) {
+    setEditingId(item.id);
+    setCategory(item.category);
+    setTitle(item.title);
+    setSubtitle(item.subtitle ?? "");
+    setPhone(item.phone ?? "");
+    setNotes(item.notes ?? "");
+    setPhoto(null);
+    setExistingPhotoUrl(item.photo_url);
+    setFormError(null);
+    setShowForm(true);
+  }
 
   async function handlePickPhoto() {
     setFormError(null);
@@ -407,11 +520,13 @@ function VaultSection({
     if (picked) setPhoto(picked);
   }
 
-  async function handleAdd() {
+  async function handleSubmit() {
     setFormError(null);
     if (!title.trim()) return setFormError("Please give this a name.");
     setSaving(true);
-    let photoUrl: string | null = null;
+
+    // Keep the existing photo unless the caregiver picked a new one or removed it.
+    let photoUrl: string | null = existingPhotoUrl;
     if (photo) {
       try {
         photoUrl = await uploadVaultPhoto(caregiverId, photo);
@@ -423,33 +538,42 @@ function VaultSection({
         return;
       }
     }
-    save.mutate(
-      {
-        user_id: patientId,
-        category,
-        title: title.trim(),
-        subtitle: subtitle.trim() || null,
-        phone: phone.trim() || null,
-        notes: notes.trim() || null,
-        photo_url: photoUrl,
-      },
-      {
-        onSuccess: () => {
-          setTitle("");
-          setSubtitle("");
-          setPhone("");
-          setNotes("");
-          setPhoto(null);
-          setShowForm(false);
-          setSaving(false);
+
+    const values = {
+      category,
+      title: title.trim(),
+      subtitle: subtitle.trim() || null,
+      phone: phone.trim() || null,
+      notes: notes.trim() || null,
+      photo_url: photoUrl,
+    };
+
+    if (editingId) {
+      update.mutate(
+        { id: editingId, values },
+        {
+          onSuccess: reset,
+          onError: (e) => {
+            setSaving(false);
+            setFormError(e.message);
+          },
         },
-        onError: (error) => {
-          setSaving(false);
-          setFormError(error.message);
+      );
+    } else {
+      save.mutate(
+        { user_id: patientId, ...values },
+        {
+          onSuccess: reset,
+          onError: (e) => {
+            setSaving(false);
+            setFormError(e.message);
+          },
         },
-      },
-    );
+      );
+    }
   }
+
+  const shownPhotoUri = photo?.previewUri ?? existingPhotoUrl ?? null;
 
   return (
     <>
@@ -460,11 +584,12 @@ function VaultSection({
       <Button
         label={showForm ? "Cancel" : `Add to ${name}'s memory bank`}
         variant={showForm ? "secondary" : "primary"}
-        onPress={() => setShowForm((v) => !v)}
+        onPress={() => (showForm ? reset() : setShowForm(true))}
       />
 
       {showForm && (
         <Card>
+          {editingId && <Text style={styles.editingLabel}>Editing entry</Text>}
           {formError && <Text style={styles.error}>{formError}</Text>}
           <Text style={styles.fieldLabel}>What kind of thing is this?</Text>
           <Chips
@@ -507,9 +632,9 @@ function VaultSection({
             multiline
           />
           <Text style={styles.fieldLabel}>Photo (optional)</Text>
-          {photo ? (
+          {shownPhotoUri ? (
             <View style={styles.photoRow}>
-              <Image source={{ uri: photo.previewUri }} style={styles.photoPreview} />
+              <Image source={{ uri: shownPhotoUri }} style={styles.photoPreview} />
               <View style={{ flex: 1, gap: spacing(2) }}>
                 <Button
                   label="Choose a different photo"
@@ -519,7 +644,10 @@ function VaultSection({
                 <Button
                   label="Remove photo"
                   variant="ghost"
-                  onPress={() => setPhoto(null)}
+                  onPress={() => {
+                    setPhoto(null);
+                    setExistingPhotoUrl(null);
+                  }}
                 />
               </View>
             </View>
@@ -531,9 +659,9 @@ function VaultSection({
             />
           )}
           <Button
-            label="Save to memory bank"
-            loading={saving || save.isPending}
-            onPress={handleAdd}
+            label={editingId ? "Save changes" : "Save to memory bank"}
+            loading={saving || save.isPending || update.isPending}
+            onPress={handleSubmit}
           />
         </Card>
       )}
@@ -556,6 +684,8 @@ function VaultSection({
               "Note"
             }
             photoUrl={item.photo_url}
+            active={editingId === item.id}
+            onEdit={() => startEdit(item)}
             onDelete={() => remove.mutate(item.id)}
           />
         ))
@@ -605,15 +735,19 @@ function ManageRow({
   title,
   meta,
   photoUrl,
+  active,
+  onEdit,
   onDelete,
 }: {
   title: string;
   meta: string;
   photoUrl?: string | null;
+  active?: boolean;
+  onEdit: () => void;
   onDelete: () => void;
 }) {
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, active && styles.rowActive]}>
       {photoUrl ? (
         <Image source={{ uri: photoUrl }} style={styles.rowPhoto} />
       ) : null}
@@ -621,6 +755,14 @@ function ManageRow({
         <Text style={styles.rowTitle}>{title}</Text>
         <Text style={styles.rowMeta}>{meta}</Text>
       </View>
+      <Pressable
+        accessibilityLabel={`Edit ${title}`}
+        accessibilityRole="button"
+        onPress={onEdit}
+        style={styles.editButton}
+      >
+        <Ionicons name="pencil" size={19} color={colors.label2} />
+      </Pressable>
       <Pressable
         accessibilityLabel={`Delete ${title}`}
         accessibilityRole="button"
@@ -653,6 +795,13 @@ const styles = StyleSheet.create({
   segmentTextActive: { color: "#000" },
   summaryLine: { color: colors.label3, fontSize: font.base },
   error: { color: colors.red, fontSize: font.base, fontWeight: "600" },
+  editingLabel: {
+    color: colors.label3,
+    fontSize: font.sm,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
   fieldLabel: { color: colors.label2, fontSize: font.base, fontWeight: "600" },
   input: {
     minHeight: 52,
@@ -683,6 +832,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     padding: spacing(4),
   },
+  rowActive: { borderWidth: 1, borderColor: colors.label3 },
   rowTitle: { color: colors.label, fontSize: font.base, fontWeight: "700" },
   rowMeta: { color: colors.label3, fontSize: font.sm, marginTop: 2 },
   rowPhoto: {
@@ -700,6 +850,14 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: radius.md,
+    backgroundColor: colors.elev2,
+  },
+  editButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: colors.elev2,
   },
   deleteButton: {

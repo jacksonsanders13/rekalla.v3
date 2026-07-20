@@ -10,7 +10,7 @@ import type {
   VaultItem,
   WellnessEntry,
 } from "../lib/types";
-import type { TablesInsert } from "../lib/database.types";
+import type { TablesInsert, TablesUpdate } from "../lib/database.types";
 
 // ---------------------------------------------------------------------------
 // Reminders
@@ -97,6 +97,22 @@ export function useSaveReminder(userId: string) {
   });
 }
 
+export function useUpdateReminder(userId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { id: string; values: TablesUpdate<"reminders"> }) => {
+      const { error } = await supabase
+        .from("reminders")
+        .update(input.values)
+        .eq("id", input.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["reminders", userId] });
+    },
+  });
+}
+
 export function useDeleteReminder(userId: string) {
   const qc = useQueryClient();
   return useMutation({
@@ -151,6 +167,25 @@ export function useSaveRoutineItem(userId: string) {
   return useMutation({
     mutationFn: async (values: TablesInsert<"routine_items">) => {
       const { error } = await supabase.from("routine_items").insert(values);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["routine-items", userId] });
+    },
+  });
+}
+
+export function useUpdateRoutineItem(userId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: {
+      id: string;
+      values: TablesUpdate<"routine_items">;
+    }) => {
+      const { error } = await supabase
+        .from("routine_items")
+        .update(input.values)
+        .eq("id", input.id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -229,6 +264,25 @@ export function useSaveVaultItem(userId: string) {
   return useMutation({
     mutationFn: async (values: TablesInsert<"vault_items">) => {
       const { error } = await supabase.from("vault_items").insert(values);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["vault-items", userId] });
+    },
+  });
+}
+
+export function useUpdateVaultItem(userId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: {
+      id: string;
+      values: TablesUpdate<"vault_items">;
+    }) => {
+      const { error } = await supabase
+        .from("vault_items")
+        .update(input.values)
+        .eq("id", input.id);
       if (error) throw error;
     },
     onSuccess: () => {
