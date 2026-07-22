@@ -194,20 +194,21 @@
 
   /* ---- interactive demo ---- */
   .demo { text-align: center; }
-  .demo-tabs {
-    display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 8px;
-    background: var(--elev1); border-radius: 999px; padding: 6px; margin: 8px 0 36px;
+  .demo-stage { display: flex; justify-content: center; margin-top: 8px; }
+  .demo-phone {
+    width: min(330px, 84vw);
+    aspect-ratio: 9 / 19;
+    border-radius: 48px; padding: 11px;
+    background: #0a0a0b;
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(0,0,0,0.8);
   }
-  .demo-tab {
-    border: 0; cursor: pointer; font-family: inherit;
-    min-height: 44px; padding: 0 20px; border-radius: 999px;
-    background: transparent; color: var(--label3);
-    font-size: 15px; font-weight: 600; transition: all .15s;
+  .demo-frame {
+    width: 100%; height: 100%;
+    border: 0; border-radius: 38px; display: block;
+    background: #000;
   }
-  .demo-tab:hover { color: var(--label); }
-  .demo-tab[aria-selected="true"] { background: var(--label); color: #000; }
-  .demo-stage { display: flex; justify-content: center; }
-  .demo-hint { color: var(--label4); font-size: 14px; margin-top: 22px; }
+  .demo-hint { color: var(--label4); font-size: 14px; margin-top: 24px; }
 </style>
 </head>
 <body>
@@ -309,27 +310,21 @@
 
 <section id="demo" class="wrap demo">
   <div class="section-head" style="margin-left:auto;margin-right:auto;">
-    <h2>See it in action.</h2>
+    <h2>Try it yourself.</h2>
     <p>
-      Tap through the four screens people use every day. This is the real
-      app — the same clear layout that ships on your phone.
+      A live, tappable preview — right here in your browser. Mark a reminder
+      done, check off the routine, search the vault, do a check-in and watch
+      the rings fill in. Switch screens with the tab bar at the bottom.
     </p>
   </div>
 
-  <div class="demo-tabs" role="tablist" aria-label="Rekalla screens">
-    <button class="demo-tab" role="tab" aria-selected="true" data-img="summary" aria-controls="demo-img">Today</button>
-    <button class="demo-tab" role="tab" aria-selected="false" data-img="routine" aria-controls="demo-img">Routine</button>
-    <button class="demo-tab" role="tab" aria-selected="false" data-img="vault" aria-controls="demo-img">Memory</button>
-    <button class="demo-tab" role="tab" aria-selected="false" data-img="manager" aria-controls="demo-img">Caregiver</button>
-  </div>
-
   <div class="demo-stage">
-    <div class="phone">
-      <img id="demo-img" src="https://raw.githubusercontent.com/jacksonsanders13/rekalla/main/landing/img/summary.png" alt="Rekalla's Today screen" width="480" height="1043">
+    <div class="demo-phone">
+      <iframe class="demo-frame" src="/demo/app.html" title="Interactive Rekalla preview" loading="lazy"></iframe>
     </div>
   </div>
 
-  <p class="demo-hint">A screenshot walkthrough — the full app is coming to the App Store.</p>
+  <p class="demo-hint">A hands-on preview with sample data — the full app is coming to the App Store.</p>
 </section>
 
 <section id="how" class="wrap">
@@ -485,23 +480,6 @@
         .catch(function () {
           msg.textContent = "Hmm, that didn't work. Please try again.";
         });
-    });
-  })();
-</script>
-
-<script>
-  (function () {
-    var base = "https://raw.githubusercontent.com/jacksonsanders13/rekalla/main/landing/img/";
-    var labels = { summary: "Today", routine: "Routine", vault: "Memory", manager: "Caregiver" };
-    var img = document.getElementById("demo-img");
-    var tabs = document.querySelectorAll(".demo-tab");
-    tabs.forEach(function (tab) {
-      tab.addEventListener("click", function () {
-        var name = tab.getAttribute("data-img");
-        tabs.forEach(function (t) { t.setAttribute("aria-selected", t === tab ? "true" : "false"); });
-        img.src = base + name + ".png";
-        img.alt = "Rekalla's " + labels[name] + " screen";
-      });
     });
   })();
 </script>

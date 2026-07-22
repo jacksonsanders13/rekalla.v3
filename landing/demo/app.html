@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Rekalla demo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --base: #000000;
+    --elev1: #1c1c1e;
+    --elev2: #2c2c2e;
+    --elev3: #3a3a3c;
+    --label: #ffffff;
+    --label2: #d1d1d6;
+    --label3: #8e8e93;
+    --label4: #636366;
+    --green: #30d158;
+    --blue: #0a84ff;
+    --teal: #64d2ff;
+    --orange: #ff9f0a;
+    --pink: #ff375f;
+    --purple: #bf5af2;
+    --yellow: #ffd60a;
+    --red: #ff453a;
+  }
+  html, body { height: 100%; }
+  body {
+    background: var(--base);
+    color: var(--label);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+  .app { display: flex; flex-direction: column; height: 100%; }
+
+  /* status bar */
+  .statusbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 22px 4px; font-size: 13px; font-weight: 600; color: var(--label);
+    flex: 0 0 auto;
+  }
+  .statusbar .icons { display: flex; gap: 6px; align-items: center; }
+  .statusbar svg { display: block; }
+
+  /* scrollable screen area */
+  .screen {
+    flex: 1 1 auto; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 6px 18px 24px;
+  }
+  .screen::-webkit-scrollbar { width: 0; }
+
+  .head { display: flex; align-items: flex-start; justify-content: space-between; margin: 8px 0 18px; }
+  .kicker { font-size: 12px; font-weight: 700; letter-spacing: 0.8px; color: var(--label3); text-transform: uppercase; }
+  .greeting { font-size: 27px; font-weight: 800; letter-spacing: -0.6px; line-height: 1.1; margin-top: 4px; }
+  .h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.6px; margin-bottom: 4px; }
+  .lede { color: var(--label3); font-size: 15px; margin-bottom: 20px; }
+  .head-actions { display: flex; gap: 6px; padding-top: 6px; }
+  .icon-btn {
+    width: 40px; height: 40px; border-radius: 999px; border: 0; cursor: pointer;
+    background: transparent; color: var(--label2); display: grid; place-items: center;
+  }
+  .icon-btn:active { background: var(--elev1); }
+
+  .card { background: var(--elev1); border-radius: 22px; padding: 18px; margin-bottom: 14px; }
+  .section-title { font-size: 22px; font-weight: 800; letter-spacing: -0.4px; margin: 14px 2px 12px; }
+
+  /* rings card */
+  .rings-card { display: flex; align-items: center; gap: 8px; padding: 20px 18px; }
+  .rings { flex: 0 0 auto; }
+  .legend { display: flex; flex-direction: column; gap: 14px; margin-left: 6px; }
+  .leg-row .leg-top { display: flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; letter-spacing: 0.6px; color: var(--label3); text-transform: uppercase; }
+  .dot { width: 9px; height: 9px; border-radius: 999px; }
+  .leg-val { font-size: 21px; font-weight: 800; letter-spacing: -0.3px; margin-top: 1px; }
+
+  /* reminder / list rows */
+  .row { display: flex; align-items: center; gap: 13px; }
+  .tile { width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center; font-size: 20px; flex: 0 0 auto; }
+  .row-main { flex: 1 1 auto; min-width: 0; }
+  .row-title { font-size: 17px; font-weight: 700; letter-spacing: -0.2px; }
+  .row-sub { color: var(--label3); font-size: 14px; margin-top: 1px; }
+
+  .btn-row { display: flex; gap: 10px; margin-top: 14px; }
+  .btn {
+    flex: 1 1 0; min-height: 46px; border: 0; border-radius: 14px; cursor: pointer;
+    font-family: inherit; font-size: 16px; font-weight: 700; letter-spacing: -0.2px;
+    display: grid; place-items: center; transition: opacity .12s, transform .05s;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-done { background: var(--label); color: #000; }
+  .btn-snooze { background: var(--elev2); color: var(--label); }
+  .btn-ghost { background: var(--elev2); color: var(--label2); }
+
+  .done-badge {
+    display: inline-flex; align-items: center; gap: 7px; margin-top: 12px;
+    color: var(--green); font-size: 15px; font-weight: 700;
+  }
+  .snoozed-badge { color: var(--orange); }
+  .link-btn { background: none; border: 0; color: var(--label3); font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit; padding: 4px 0; }
+
+  .completed .row-title { color: var(--label3); text-decoration: line-through; }
+
+  /* checkbox rows (routine) */
+  .check-row { display: flex; align-items: center; gap: 14px; background: var(--elev1); border-radius: 20px; padding: 14px 16px; margin-bottom: 12px; cursor: pointer; }
+  .check-row:active { background: var(--elev2); }
+  .checkbox {
+    width: 40px; height: 40px; border-radius: 12px; flex: 0 0 auto;
+    border: 2px solid var(--elev3); display: grid; place-items: center; transition: all .12s;
+  }
+  .checkbox.on { background: var(--label); border-color: var(--label); }
+  .checkbox svg { opacity: 0; transition: opacity .12s; }
+  .checkbox.on svg { opacity: 1; }
+  .check-title { font-size: 17px; font-weight: 700; letter-spacing: -0.2px; }
+  .check-sub { color: var(--label3); font-size: 14px; margin-top: 1px; }
+  .check-row.on .check-title { color: var(--label3); text-decoration: line-through; }
+
+  /* search */
+  .search {
+    width: 100%; background: var(--elev1); border: 0; border-radius: 15px;
+    padding: 14px 16px; color: var(--label); font-size: 16px; font-family: inherit; margin-bottom: 16px;
+  }
+  .search::placeholder { color: var(--label3); }
+  .search:focus { outline: 2px solid var(--elev3); }
+
+  .vault-card { background: var(--elev1); border-radius: 20px; padding: 16px; margin-bottom: 12px; }
+  .vault-phone {
+    display: flex; align-items: center; gap: 9px; margin-top: 12px;
+    background: rgba(48,209,88,0.14); color: var(--green); border-radius: 13px;
+    padding: 12px 14px; font-size: 16px; font-weight: 700; border: 0; width: 100%; cursor: pointer; font-family: inherit;
+  }
+  .vault-phone:active { background: rgba(48,209,88,0.24); }
+  .star { color: var(--label); font-size: 15px; }
+  .empty { color: var(--label3); text-align: center; padding: 40px 0; font-size: 15px; }
+
+  /* wellness */
+  .well-label { font-size: 15px; font-weight: 700; color: var(--label2); margin: 4px 2px 10px; }
+  .mood-row { display: flex; gap: 8px; margin-bottom: 22px; }
+  .mood {
+    flex: 1 1 0; aspect-ratio: 1; border: 2px solid var(--elev2); background: var(--elev1);
+    border-radius: 16px; font-size: 24px; cursor: pointer; display: grid; place-items: center; transition: all .12s;
+  }
+  .mood:active { transform: scale(0.95); }
+  .mood.on { border-color: var(--label); background: var(--elev2); transform: scale(1.03); }
+  .well-done { text-align: center; padding: 14px 0; }
+  .well-done .big { font-size: 44px; }
+
+  /* tab bar */
+  .tabbar {
+    flex: 0 0 auto; display: flex; border-top: 1px solid rgba(255,255,255,0.09);
+    background: rgba(0,0,0,0.9); padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+  }
+  .tab {
+    flex: 1 1 0; background: none; border: 0; cursor: pointer; font-family: inherit;
+    display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 0;
+    color: var(--label4); transition: color .12s;
+  }
+  .tab .label { font-size: 10.5px; font-weight: 600; letter-spacing: 0.1px; }
+  .tab.on { color: var(--label); }
+  .tab svg { display: block; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%) translateY(12px);
+    background: var(--elev3); color: var(--label); padding: 11px 18px; border-radius: 999px;
+    font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; transition: all .22s;
+    white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="statusbar">
+    <span id="clock">9:41</span>
+    <span class="icons" aria-hidden="true">
+      <!-- signal -->
+      <svg width="18" height="12" viewBox="0 0 18 12"><g fill="#fff"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></g></svg>
+      <!-- battery -->
+      <svg width="26" height="13" viewBox="0 0 26 13"><rect x="0.5" y="0.5" width="21" height="12" rx="3.5" fill="none" stroke="#fff" stroke-opacity="0.5"/><rect x="2.5" y="2.5" width="16" height="8" rx="1.8" fill="#fff"/><rect x="23" y="4" width="2" height="5" rx="1" fill="#fff" fill-opacity="0.5"/></svg>
+    </span>
+  </div>
+
+  <div class="screen" id="screen"></div>
+
+  <nav class="tabbar" id="tabbar" aria-label="Sections"></nav>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---- data / state ------------------------------------------------------
+  var state = {
+    tab: "summary",
+    reminders: [
+      { id: "r1", title: "Morning pills", time: "8:00 AM", cat: "Medication", icon: "💊", tint: "#ff453a", status: "done" },
+      { id: "r2", title: "Water the plants", time: "9:00 AM", cat: "Home", icon: "🪴", tint: "#30d158", status: "done" },
+      { id: "r3", title: "Lunch", time: "12:30 PM", cat: "Meals", icon: "🍽️", tint: "#ff9f0a", status: "done" },
+      { id: "r4", title: "Call Sarah", time: "9:30 PM", cat: "Family calls", icon: "📞", tint: "#bf5af2", status: "open" }
+    ],
+    routine: [
+      { id: "m1", period: "Morning", title: "Brush teeth", time: "around 8:00 AM", done: true },
+      { id: "m2", period: "Morning", title: "Water the plants", time: "around 9:00 AM", done: true },
+      { id: "a1", period: "Afternoon", title: "Short walk outside", time: "around 2:00 PM", done: true },
+      { id: "e1", period: "Evening", title: "Take evening pills", time: "around 8:00 PM", done: false }
+    ],
+    vault: [
+      { id: "v1", title: "Sarah (daughter)", sub: "Lives 10 minutes away", icon: "👥", tint: "#bf5af2", star: true, phone: "(555) 987-6543" },
+      { id: "v2", title: "Dr. Alvarez", sub: "Primary care · Tuesdays", icon: "⚕️", tint: "#0a84ff", star: true, phone: "(555) 123-4567" },
+      { id: "v3", title: "Metformin", sub: "500mg with breakfast and dinner", icon: "💊", tint: "#ff453a" },
+      { id: "v4", title: "Wedding anniversary", sub: "June 12th", icon: "📅", tint: "#ffd60a" },
+      { id: "v5", title: "Emergency contact", sub: "Sarah, then Dr. Alvarez", icon: "❗", tint: "#ff453a" }
+    ],
+    vaultQuery: "",
+    checkin: null // {mood: 1-5}
+  };
+
+  var MOODS = ["😞", "😕", "🙂", "😊", "😄"];
+
+  // ---- derived -----------------------------------------------------------
+  function remindersDone() { return state.reminders.filter(function (r) { return r.status === "done"; }).length; }
+  function routineDone() { return state.routine.filter(function (r) { return r.done; }).length; }
+  function nextReminder() { return state.reminders.filter(function (r) { return r.status !== "done"; })[0] || null; }
+
+  // ---- icons -------------------------------------------------------------
+  var ICONS = {
+    heart: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 0 0-7.1 7.1l1.7 1.7L12 21.4l7.1-7.1 1.7-1.7a5 5 0 0 0 0-7z"/></svg>',
+    gear: '<svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>',
+    check: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+    checkGreen: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+    clock: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    phone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.58 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.4 11.4 0 0 0 .58 3.6 1 1 0 0 1-.25 1z"/></svg>'
+  };
+
+  var TAB_ICONS = {
+    summary: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/></svg>',
+    reminders: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>',
+    routine: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg>',
+    vault: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5.5A2.5 2.5 0 0 1 5.5 3H12v17H5.5A2.5 2.5 0 0 0 3 22.5z"/><path d="M21 5.5A2.5 2.5 0 0 0 18.5 3H12v17h6.5a2.5 2.5 0 0 1 2.5 2.5z"/></svg>',
+    wellness: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 0 0-7.1 7.1l1.7 1.7L12 21.4l7.1-7.1 1.7-1.7a5 5 0 0 0 0-7z"/></svg>'
+  };
+
+  var TABS = [
+    { id: "summary", label: "Summary" },
+    { id: "reminders", label: "Reminders" },
+    { id: "routine", label: "Routine" },
+    { id: "vault", label: "Vault" },
+    { id: "wellness", label: "Wellness" }
+  ];
+
+  // ---- helpers -----------------------------------------------------------
+  var screen = document.getElementById("screen");
+  var tabbar = document.getElementById("tabbar");
+  var toastEl = document.getElementById("toast");
+  var toastTimer;
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
+
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove("show"); }, 1600);
+  }
+
+  function ring(cx, cy, r, w, color, frac) {
+    var c = 2 * Math.PI * r;
+    var off = c * (1 - Math.max(0, Math.min(1, frac)));
+    return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-opacity="0.22" stroke-width="' + w + '"/>' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="' + w + '" stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + off.toFixed(1) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>';
+  }
+
+  // ---- screens -----------------------------------------------------------
+  function renderSummary() {
+    var rDone = remindersDone(), rTot = state.reminders.length;
+    var oDone = routineDone(), oTot = state.routine.length;
+    var checkedIn = state.checkin != null;
+    var nxt = nextReminder();
+
+    var svg = '<svg class="rings" width="140" height="140" viewBox="0 0 140 140" aria-hidden="true">' +
+      ring(70, 70, 56, 15, "var(--pink)", rDone / rTot) +
+      ring(70, 70, 39, 15, "var(--green)", oDone / oTot) +
+      ring(70, 70, 22, 15, "var(--blue)", checkedIn ? 1 : 0) +
+      '</svg>';
+
+    var upNext = nxt
+      ? '<div class="card">' +
+          '<div class="row">' +
+            '<div class="tile" style="background:' + nxt.tint + '1f;color:' + nxt.tint + '">' + nxt.icon + '</div>' +
+            '<div class="row-main"><div class="row-title">' + esc(nxt.title) + '</div>' +
+            '<div class="row-sub">' + esc(nxt.time) + ' · ' + esc(nxt.cat) + '</div></div>' +
+          '</div>' +
+          '<div class="btn-row">' +
+            '<button class="btn btn-done" data-act="done" data-id="' + nxt.id + '">Done</button>' +
+            '<button class="btn btn-snooze" data-act="snooze" data-id="' + nxt.id + '">Snooze</button>' +
+          '</div>' +
+        '</div>'
+      : '<div class="card"><div class="done-badge">' + ICONS.checkGreen + ' All reminders done for today</div></div>';
+
+    screen.innerHTML =
+      '<div class="head">' +
+        '<div><div class="kicker">' + todayLabel() + '</div>' +
+        '<div class="greeting">' + greetingWord() + ',<br>Rosa</div></div>' +
+        '<div class="head-actions">' +
+          '<button class="icon-btn" data-toast="Saved to favorites" aria-label="Favorites">' + ICONS.heart + '</button>' +
+          '<button class="icon-btn" data-toast="Settings" aria-label="Settings">' + ICONS.gear + '</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="card rings-card">' + svg +
+        '<div class="legend">' +
+          legRow("var(--pink)", "Reminders", rDone + " of " + rTot) +
+          legRow("var(--green)", "Routine", oDone + " of " + oTot) +
+          legRow("var(--blue)", "Check-in", checkedIn ? "Done" : "Not yet") +
+        '</div>' +
+      '</div>' +
+      '<div class="section-title">Up next</div>' +
+      upNext;
+  }
+
+  function legRow(color, label, val) {
+    var valColor = val === "Not yet" ? "var(--label3)" : color;
+    return '<div class="leg-row"><div class="leg-top"><span class="dot" style="background:' + color + '"></span>' + label + '</div>' +
+      '<div class="leg-val" style="color:' + valColor + '">' + val + '</div></div>';
+  }
+
+  function renderReminders() {
+    var html = '<div class="h1">Reminders</div><div class="lede">Tap Done when you’ve finished, or Snooze for later.</div>';
+    state.reminders.forEach(function (r) {
+      var done = r.status === "done", snoozed = r.status === "snoozed";
+      html += '<div class="card' + (done ? " completed" : "") + '">' +
+        '<div class="row">' +
+          '<div class="tile" style="background:' + r.tint + '1f;color:' + r.tint + '">' + r.icon + '</div>' +
+          '<div class="row-main"><div class="row-title">' + esc(r.title) + '</div>' +
+          '<div class="row-sub">' + esc(r.time) + ' · ' + esc(r.cat) + '</div></div>' +
+        '</div>';
+      if (done) {
+        html += '<div class="done-badge">' + ICONS.checkGreen + ' Done ' +
+          '<button class="link-btn" data-act="reopen" data-id="' + r.id + '">Undo</button></div>';
+      } else if (snoozed) {
+        html += '<div class="done-badge snoozed-badge">' + ICONS.clock + ' Snoozed 10 min ' +
+          '<button class="link-btn" data-act="done" data-id="' + r.id + '">Mark done</button></div>';
+      } else {
+        html += '<div class="btn-row">' +
+          '<button class="btn btn-done" data-act="done" data-id="' + r.id + '">Done</button>' +
+          '<button class="btn btn-snooze" data-act="snooze" data-id="' + r.id + '">Snooze</button>' +
+        '</div>';
+      }
+      html += '</div>';
+    });
+    screen.innerHTML = html;
+  }
+
+  function renderRoutine() {
+    var html = '<div class="h1">Routine</div><div class="lede">Check off each step as your day goes on.</div>';
+    ["Morning", "Afternoon", "Evening"].forEach(function (period) {
+      var items = state.routine.filter(function (i) { return i.period === period; });
+      if (!items.length) return;
+      html += '<div class="section-title">' + period + '</div>';
+      items.forEach(function (i) {
+        html += '<div class="check-row' + (i.done ? " on" : "") + '" data-act="toggle" data-id="' + i.id + '" role="button" tabindex="0">' +
+          '<div class="checkbox' + (i.done ? " on" : "") + '">' + ICONS.check + '</div>' +
+          '<div><div class="check-title">' + esc(i.title) + '</div>' +
+          '<div class="check-sub">' + esc(i.time) + '</div></div>' +
+        '</div>';
+      });
+    });
+    screen.innerHTML = html;
+  }
+
+  function renderVault() {
+    var q = state.vaultQuery.trim().toLowerCase();
+    var items = state.vault.filter(function (v) {
+      return !q || (v.title + " " + v.sub).toLowerCase().indexOf(q) !== -1;
+    });
+    var list = items.map(function (v) {
+      return '<div class="vault-card">' +
+        '<div class="row">' +
+          '<div class="tile" style="background:' + v.tint + '1f;color:' + v.tint + '">' + v.icon + '</div>' +
+          '<div class="row-main"><div class="row-title">' + esc(v.title) + (v.star ? ' <span class="star">★</span>' : '') + '</div>' +
+          '<div class="row-sub">' + esc(v.sub) + '</div></div>' +
+        '</div>' +
+        (v.phone ? '<button class="vault-phone" data-toast="Calling ' + esc(v.phone) + '">' + ICONS.phone + esc(v.phone) + '</button>' : '') +
+      '</div>';
+    }).join("");
+    screen.innerHTML =
+      '<div class="h1">Vault</div>' +
+      '<div class="lede">People, doctors, and important details — kept up to date by your caregiver.</div>' +
+      '<input class="search" id="vault-search" type="text" placeholder="Search names, medications, notes…" value="' + esc(state.vaultQuery) + '">' +
+      (list || '<div class="empty">Nothing matches “' + esc(state.vaultQuery) + '”.</div>');
+    var s = document.getElementById("vault-search");
+    if (s) {
+      s.addEventListener("input", function () { state.vaultQuery = s.value; renderVault(); });
+      if (q) { s.focus(); var v = s.value; s.value = ""; s.value = v; }
+    }
+  }
+
+  function renderWellness() {
+    var html = '<div class="h1">Daily check-in</div><div class="lede">A quick note on how today feels. Your caregiver can see the trend, never the details you keep private.</div>';
+    if (state.checkin != null) {
+      html += '<div class="card well-done">' +
+        '<div class="big">' + MOODS[state.checkin.mood] + '</div>' +
+        '<div class="done-badge" style="justify-content:center">' + ICONS.checkGreen + ' Checked in for today</div>' +
+        '<button class="btn btn-ghost" style="margin-top:16px" data-act="edit-checkin">Change my answer</button>' +
+      '</div>';
+    } else {
+      html += '<div class="well-label">How are you feeling today?</div><div class="mood-row">';
+      MOODS.forEach(function (m, i) {
+        html += '<button class="mood" data-act="mood" data-mood="' + i + '" aria-label="Mood ' + (i + 1) + '">' + m + '</button>';
+      });
+      html += '</div>' +
+        '<button class="btn btn-done" id="save-checkin" style="width:100%;opacity:.5;pointer-events:none">Save check-in</button>';
+    }
+    screen.innerHTML = html;
+  }
+
+  var pendingMood = null;
+
+  // ---- render dispatch ---------------------------------------------------
+  function render() {
+    pendingMood = null;
+    if (state.tab === "summary") renderSummary();
+    else if (state.tab === "reminders") renderReminders();
+    else if (state.tab === "routine") renderRoutine();
+    else if (state.tab === "vault") renderVault();
+    else if (state.tab === "wellness") renderWellness();
+    renderTabs();
+    screen.scrollTop = 0;
+  }
+
+  function renderTabs() {
+    tabbar.innerHTML = TABS.map(function (t) {
+      return '<button class="tab' + (state.tab === t.id ? " on" : "") + '" data-tab="' + t.id + '" aria-current="' + (state.tab === t.id) + '">' +
+        TAB_ICONS[t.id] + '<span class="label">' + t.label + '</span></button>';
+    }).join("");
+  }
+
+  // ---- interactions ------------------------------------------------------
+  function findReminder(id) { return state.reminders.filter(function (r) { return r.id === id; })[0]; }
+  function findRoutine(id) { return state.routine.filter(function (r) { return r.id === id; })[0]; }
+
+  function handleAct(act, el) {
+    var id = el.getAttribute("data-id");
+    if (act === "done") { var r = findReminder(id); if (r) { r.status = "done"; toast("Nice — marked done"); render(); } }
+    else if (act === "snooze") { var s = findReminder(id); if (s) { s.status = "snoozed"; toast("Snoozed for 10 minutes"); render(); } }
+    else if (act === "reopen") { var o = findReminder(id); if (o) { o.status = "open"; render(); } }
+    else if (act === "toggle") { var it = findRoutine(id); if (it) { it.done = !it.done; render(); } }
+    else if (act === "mood") {
+      pendingMood = parseInt(el.getAttribute("data-mood"), 10);
+      Array.prototype.forEach.call(document.querySelectorAll(".mood"), function (m) {
+        m.classList.toggle("on", m === el);
+      });
+      var save = document.getElementById("save-checkin");
+      if (save) { save.style.opacity = "1"; save.style.pointerEvents = "auto"; }
+    }
+    else if (act === "edit-checkin") { state.checkin = null; render(); }
+  }
+
+  document.addEventListener("click", function (e) {
+    var tab = e.target.closest("[data-tab]");
+    if (tab) { state.tab = tab.getAttribute("data-tab"); render(); return; }
+
+    var save = e.target.closest("#save-checkin");
+    if (save && pendingMood != null) { state.checkin = { mood: pendingMood }; toast("Thanks for checking in"); render(); return; }
+
+    var toastBtn = e.target.closest("[data-toast]");
+    if (toastBtn) { toast(toastBtn.getAttribute("data-toast")); return; }
+
+    var actEl = e.target.closest("[data-act]");
+    if (actEl) { handleAct(actEl.getAttribute("data-act"), actEl); }
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if ((e.key === "Enter" || e.key === " ") && e.target.classList && e.target.classList.contains("check-row")) {
+      e.preventDefault();
+      handleAct("toggle", e.target);
+    }
+  });
+
+  // ---- date helpers ------------------------------------------------------
+  function greetingWord() {
+    var h = new Date().getHours();
+    if (h < 12) return "Good morning";
+    if (h < 18) return "Good afternoon";
+    return "Good evening";
+  }
+  function todayLabel() {
+    var d = new Date();
+    var days = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+    var months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
+    return days[d.getDay()] + ", " + months[d.getMonth()] + " " + d.getDate();
+  }
+  function tickClock() {
+    var d = new Date();
+    var h = d.getHours() % 12; if (h === 0) h = 12;
+    document.getElementById("clock").textContent = h + ":" + String(d.getMinutes()).padStart(2, "0");
+  }
+  tickClock();
+  setInterval(tickClock, 15000);
+
+  render();
+})();
+</script>
+</body>
+</html>
